@@ -24,11 +24,29 @@ class PhotoCollectionViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        loadPhotos()
+        requestPrivilegeAndLoadPhotos()
         
         collection.delegate = self
         collection.dataSource = self
         collection.register(PhotoCollectionCell.self, forCellWithReuseIdentifier: cellIdentifier)
+    }
+    
+    private func requestPrivilegeAndLoadPhotos() {
+        let status = PHPhotoLibrary.authorizationStatus()
+        if status == .authorized {
+            loadPhotos()
+        } else {
+            PHPhotoLibrary.requestAuthorization { (status) in
+                if status == .authorized {
+                    self.loadPhotos()
+                    DispatchQueue.main.async {
+                        self.collection.reloadData()
+                    }
+                } else {
+                    // use not grant the privilege
+                }
+            }
+        }
     }
     
     private func loadPhotos() {
