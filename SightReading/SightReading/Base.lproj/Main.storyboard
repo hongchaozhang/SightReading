@@ -55,7 +55,7 @@
         <scene sceneID="hFw-ae-hon">
             <objects>
                 <viewController storyboardIdentifier="Play" id="9sm-EO-BIo" customClass="PlayViewController" customModule="SightReading" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="yXA-7l-5NW" customClass="View">
+                    <view key="view" contentMode="scaleToFill" id="yXA-7l-5NW">
                         <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>

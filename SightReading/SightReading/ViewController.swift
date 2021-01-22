@@ -27,6 +27,7 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         loadSheets()
         sheetList.reloadData()
+        setTableViewEditMode(false)
     }
     
     private func loadSheets() {
@@ -46,14 +47,22 @@ class ViewController: UIViewController {
             }
         }
     }
+    
+    private func setTableViewEditMode(_ isEditing: Bool) {
+        if isEditing == true {
+            self.sheetList.isEditing = true
+            self.navigationItem.leftBarButtonItem?.title = "Done"
+        } else {
+            self.sheetList.isEditing = false
+            self.navigationItem.leftBarButtonItem?.title = "Edit"
+        }
+    }
 
     @IBAction func editTapped(_ sender: Any) {
         if self.sheetList.isEditing == true {
-            self.sheetList.isEditing = false
-            self.navigationItem.leftBarButtonItem?.title = "Edit"
+            setTableViewEditMode(false)
         } else {
-            self.sheetList.isEditing = true
-            self.navigationItem.leftBarButtonItem?.title = "Done"
+            setTableViewEditMode(true)
         }
     }
     @IBAction func addNewTapped(_ sender: UIBarButtonItem) {

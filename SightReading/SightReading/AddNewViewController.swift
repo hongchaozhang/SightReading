@@ -65,7 +65,11 @@ class AddNewViewController: UIViewController {
     }
     
     private func getFileName() -> String {
-        return sheetNameInput.text ?? "default sheet name"
+        if let sheetName = sheetNameInput.text, sheetName != "" {
+            return sheetName
+        } else {
+            return "empty sheet name"
+        }
     }
     
 
