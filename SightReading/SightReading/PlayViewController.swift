@@ -35,6 +35,11 @@ class PlayViewController: UIViewController {
         loadSheetImage()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stop()
+    }
+    
     private func createSoundIDs() {
         if let audioUrl = Bundle.main.url(forResource: "FirstMeter", withExtension: "wav", subdirectory: "Resource.bundle")  {
             AudioServicesCreateSystemSoundID(audioUrl as CFURL, &firstMeterId)
@@ -72,10 +77,11 @@ class PlayViewController: UIViewController {
         animateMask()
     }
     
-    @IBAction func stop(_ sender: Any) {
+    @IBAction func stop() {
         stopButton.isHidden = true
         startButton.isHidden = false
         stopMaskFlag = true
+        mask.frame = .zero
     }
     
     private func animateMask() {
@@ -103,22 +109,20 @@ class PlayViewController: UIViewController {
                             let barIndex = meterIndex/meterPerBar + 1
                             let meterIndexInBar = meterIndex % meterPerBar + 1
                             if meterIndexInBar == 1 { // first meter in a bar
-                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
+//                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
                             } else {
-                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
+//                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
                             }
                         } else { // mask is moviving
                             let realMeterIndex = meterIndex - self.barCountBeforeBegin * meterPerBar
                             let realBarIndex = realMeterIndex / meterPerBar + 1
                             let meterIndexInBar = meterIndex % meterPerBar + 1
                             if meterIndexInBar == 1 { // first meter in a bar
-                                print("meter 1 in bar \(realBarIndex)")
-                                
                                 if let barFrame = self.barFrames[realBarIndex] {
                                     self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.imageView.frame.size)
                                 }
                             } else {
-                                print("meter \(meterIndexInBar) in bar \(realBarIndex)")
+//                                print("meter \(meterIndexInBar) in bar \(realBarIndex)")
                             }
                         }
                         
@@ -126,7 +130,7 @@ class PlayViewController: UIViewController {
                         animateMask()
                         
                     } else {
-                        self.stop(UIButton())
+                        self.stop()
                     }
                 })
             }
