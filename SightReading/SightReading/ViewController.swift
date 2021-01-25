@@ -39,7 +39,7 @@ class ViewController: UIViewController {
                     let strings = filePath.split(separator: ".")
                     if let fileNameSubSeqence = strings.first  {
                         let fileName = String(fileNameSubSeqence)
-                        if !sheetNames.contains(fileName) {
+                        if fileName != "DS_Store" && !sheetNames.contains(fileName) {
                             sheetNames.append(fileName)
                         }
                     }

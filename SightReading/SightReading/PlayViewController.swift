@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 import AVFoundation
 
+let meterValues: [String] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
+
 let tempoDisplaySymbols = ["Larghissimo",
                            "Grave",
                            "Lento",
@@ -72,8 +74,9 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var startButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
     @IBOutlet weak var tempoSelector: UITextField!
-    private var tempoPickView: UIPickerView!
+    private var tempoPickerView: UIPickerView!
     @IBOutlet weak var tempoInput: UITextField!
+    private var meterPickerView: UIPickerView!
     @IBOutlet weak var meterInput: UITextField!
     @IBOutlet weak var imageViewOuterContainer: UIView!
     @IBOutlet weak var imageViewInnerContainer: UIView!
@@ -91,7 +94,7 @@ class PlayViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTempoControls()
+        setupControls()
         createSoundIDs()
         loadJsonFile()
         loadSheetImage()
@@ -102,23 +105,42 @@ class PlayViewController: UIViewController {
         stop(UIButton())
     }
     
+    private func setupControls() {
+        setupMetricInput()
+        setupTempoControls()
+    }
+    
     private func setupTempoControls() {
+        func setupTempoSelector() {
+            tempoPickerView = UIPickerView()
+            tempoPickerView.delegate = self
+            tempoPickerView.dataSource = self
+            tempoSelector.inputView = tempoPickerView
+            
+            // setup default values
+            tempoSelector.text = tempoDisplaySymbols[11] // Moderato
+            tempoInput.text = "90"
+            tempoPickerView.selectRow(11, inComponent: 0, animated: true)
+        }
+        
+        func setupTempoInput() {
+            tempoInput.delegate = self
+        }
+        
         setupTempoSelector()
         setupTempoInput()
     }
     
-    private func setupTempoSelector() {
-        tempoPickView = UIPickerView()
-        tempoPickView.delegate = self
-        tempoPickView.dataSource = self
-        tempoSelector.text = tempoDisplaySymbols[11] // Moderato
-        tempoInput.text = "90"
-        tempoPickView.selectRow(11, inComponent: 0, animated: true)
-        tempoSelector.inputView = tempoPickView
-    }
-    
-    private func setupTempoInput() {
-        tempoInput.delegate = self
+    private func setupMetricInput() {
+        meterPickerView = UIPickerView()
+        meterPickerView.delegate = self
+        meterPickerView.dataSource = self
+        meterInput.inputView = meterPickerView
+        
+        // setup default values
+        meterInput.text = "4"
+        meterPickerView.selectRow(2, inComponent: 0, animated: true)
+        
     }
     
     private func createSoundIDs() {
@@ -187,13 +209,13 @@ class PlayViewController: UIViewController {
                         }
                         
                         if meterIndex < self.barCountBeforeBegin * meterPerBar { // before beginning
-                            let barIndex = meterIndex/meterPerBar + 1
-                            let meterIndexInBar = meterIndex % meterPerBar + 1
-                            if meterIndexInBar == 1 { // first meter in a bar
+//                            let barIndex = meterIndex/meterPerBar + 1
+//                            let meterIndexInBar = meterIndex % meterPerBar + 1
+//                            if meterIndexInBar == 1 { // first meter in a bar
 //                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
-                            } else {
+//                            } else {
 //                                print("meter \(meterIndexInBar) in before-beginning bar \(barIndex)")
-                            }
+//                            }
                         } else { // mask is moviving
                             let realMeterIndex = meterIndex - self.barCountBeforeBegin * meterPerBar
                             let realBarIndex = realMeterIndex / meterPerBar + 1
@@ -240,21 +262,27 @@ class PlayViewController: UIViewController {
 
 extension PlayViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return tempoFullSymbols[row]
+        if pickerView == tempoPickerView {
+            return tempoFullSymbols[row]
+        } else {
+            return meterValues[row]
+        }
+        
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        print("select \(tempoFullSymbols[row])")
-        
-        tempoSelector.text = tempoDisplaySymbols[row]
-        
-        let tempoSymbol = tempoFullSymbols[row]
-        if let tempoInfo = tempoValues[tempoSymbol],
-           let tempoValue = tempoInfo["value"] {
-            tempoInput.text = String(tempoValue)
+        if pickerView == tempoPickerView {
+            let tempoSymbol = tempoFullSymbols[row]
+            if let tempoInfo = tempoValues[tempoSymbol],
+               let tempoValue = tempoInfo["value"] {
+                tempoInput.text = String(tempoValue)
+            }
+            tempoSelector.text = tempoDisplaySymbols[row]
+            tempoSelector.resignFirstResponder()
+        } else {
+            meterInput.text = meterValues[row]
+            meterInput.resignFirstResponder()
         }
-        
-        tempoSelector.resignFirstResponder()
     }
 }
 
@@ -264,7 +292,12 @@ extension PlayViewController: UIPickerViewDataSource {
     }
     
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return tempoFullSymbols.count
+        if pickerView == tempoPickerView {
+            return tempoFullSymbols.count
+        } else {
+            return meterValues.count
+        }
+        
     }
 }
 
@@ -290,7 +323,7 @@ extension PlayViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if let tempoSymbol = getTempoSymbol(from: textField.text) {
             tempoSelector.text = tempoSymbol
-            tempoPickView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
+            tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
         } else {
             textField.text = "90"
         }
@@ -300,7 +333,7 @@ extension PlayViewController: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         if let tempoSymbol = getTempoSymbol(from: textField.text) {
             tempoSelector.text = tempoSymbol
-            tempoPickView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
+            tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
         }
     }
 }
