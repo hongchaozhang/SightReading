@@ -58,6 +58,7 @@ class AddNewViewController: UIViewController {
             let rect = Utility.getRect(with: startPoint, and: endPoint)
             if let barIndexString = barIndexInput.text, let barIndex = Int(barIndexString), barIndex > 0 {
                 barFrames[barIndex] = Utility.getRelativeRect(with: rect, in: imageView.frame.size)
+                barIndexInput.text = String(barIndex + 1)
             }
         } else if gesture.state == .cancelled || gesture.state == .failed {
             

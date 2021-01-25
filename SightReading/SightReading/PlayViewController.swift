@@ -9,67 +9,6 @@ import Foundation
 import UIKit
 import AVFoundation
 
-let meterValues: [String] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
-
-let tempoDisplaySymbols = ["Larghissimo",
-                           "Grave",
-                           "Lento",
-                           "Largo",
-                           "Larghetto",
-                           "Adagio",
-                           "Adagietto",
-                           "Andante",
-                           "Andante",
-                           "Andantino",
-                           "Marcia moderato",
-                           "Moderato",
-                           "Allegretto",
-                           "Allegro",
-                           "Vivace",
-                           "Vivacissimo",
-                           "Allegrissimo",
-                           "Presto",
-                           "Prestissimo"]
-
-let tempoFullSymbols = ["Larghissimo － 极端地缓慢（10-19bpm）",
-                    "Grave － 沉重的、严肃的（20-40bpm）",
-                    "Lento － 缓板（41-45 bpm）",
-                    "Largo － 最缓板（现代）或广板（46-50bpm）",
-                    "Larghetto － 甚缓板（51-55bpm）",
-                    "Adagio － 柔板 / 慢板（56-65 bpm）",
-                    "Adagietto － 颇慢（66-69bpm）",
-                    "Andante moderato -中慢板（70-72bpm）",
-                    "Andante － 行板（73 - 77 bpm）",
-                    "Andantino － 稍快的行板（78-83bpm）",
-                    "Marcia moderato - 行进中（84-85bpm）",
-                    "Moderato － 中板（86 - 97 bpm）",
-                    "Allegretto － 稍快板（98-109bpm）（比 Allegro 较少见）",
-                    "Allegro (Moderato) － 快板（110-132bpm）",
-                    "Vivace － 活泼的快板（133-140 bpm）",
-                    "Vivacissimo -非常快的快板(141-150bpm)",
-                    "Allegrissimo -极快的快板(151-167bpm)",
-                    "Presto － 急板（168 -177bpm）",
-                    "Prestissimo － 最急板（178 - 500 bpm）"]
-let tempoValues: [String: [String: Int]] = ["Larghissimo － 极端地缓慢（10-19bpm）": ["min": 10, "max":19, "value": 15],
-                                            "Grave － 沉重的、严肃的（20-40bpm）": ["min": 20, "max":40, "value": 30],
-                                            "Lento － 缓板（41-45 bpm）": ["min": 41, "max":45, "value": 43],
-                                            "Largo － 最缓板（现代）或广板（46-50bpm）": ["min": 46, "max":50, "value": 48],
-                                            "Larghetto － 甚缓板（51-55bpm）": ["min": 51, "max":55, "value": 53],
-                                            "Adagio － 柔板 / 慢板（56-65 bpm）": ["min": 56, "max":65, "value": 60],
-                                            "Adagietto － 颇慢（66-69bpm）": ["min": 66, "max":69, "value": 68],
-                                            "Andante moderato -中慢板（70-72bpm）": ["min": 70, "max":72, "value": 71],
-                                            "Andante － 行板（73 - 77 bpm）": ["min": 73, "max":77, "value": 75],
-                                            "Andantino － 稍快的行板（78-83bpm）": ["min": 78, "max":83, "value": 80],
-                                            "Marcia moderato - 行进中（84-85bpm）": ["min": 84, "max":85, "value": 85],
-                                            "Moderato － 中板（86 - 97 bpm）": ["min": 86, "max":97, "value": 90],
-                                            "Allegretto － 稍快板（98-109bpm）（比 Allegro 较少见）": ["min": 98, "max":109, "value": 105],
-                                            "Allegro (Moderato) － 快板（110-132bpm）": ["min": 110, "max":132, "value": 120],
-                                            "Vivace － 活泼的快板（133-140 bpm）": ["min": 133, "max":140, "value": 135],
-                                            "Vivacissimo -非常快的快板(141-150bpm)": ["min": 141, "max":150, "value": 145],
-                                            "Allegrissimo -极快的快板(151-167bpm)": ["min": 151, "max":167, "value": 160],
-                                            "Presto － 急板（168 -177bpm）": ["min": 168, "max":177, "value": 170],
-                                            "Prestissimo － 最急板（178 - 500 bpm）": ["min": 178, "max":500, "value": 200]]
-
 class PlayViewController: UIViewController {
     @IBOutlet weak var startButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
@@ -85,7 +24,12 @@ class PlayViewController: UIViewController {
     
     private var sheetBasicInfo = [String: String]()
     private var barFrames = [Int: CGRect]()
-    private let barCountBeforeBegin = 2
+    private var isFirstPage = true
+    private var barCountBeforeBegin: Int {
+        get {
+            return isFirstPage ? 2 : 0
+        }
+    }
     
     private var stopMaskFlag = false
     
@@ -98,7 +42,7 @@ class PlayViewController: UIViewController {
         setupControls()
         createSoundIDs()
         loadJsonFile()
-        loadSheetImage()
+        loadCurrentSheetImage()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -114,13 +58,16 @@ class PlayViewController: UIViewController {
     
     private func restoreSettings() {
         if let tempo = sheetBasicInfo[tempoKey],
-           let _ = Int(tempo) {
+           let tempoSymbol = getTempoSymbol(from: tempo) {
             tempoInput.text = tempo
+            tempoSelector.text = tempoSymbol
+            tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
         }
         if let meter = sheetBasicInfo[meterKey],
            let _ = Int(meter) {
             meterInput.text = meter
         }
+        isFirstPage = true
     }
     
     private func storeSettings() {
@@ -144,6 +91,22 @@ class PlayViewController: UIViewController {
                 FileManager.default.createFile(atPath: jsonPath, contents: jsonData, attributes: nil)
             }
         }
+    }
+    private func getTempoSymbol(from tempoString: String?) -> String? {
+        var tempoSymbol: String?
+        if let tempoString = tempoString,
+           let tempoValue = Int(tempoString) {
+            for (tempoFullSymbol, tempoInfo) in tempoValues {
+                if let minTempo = tempoInfo["min"],
+                   let maxTempo = tempoInfo["max"],
+                   tempoValue >= minTempo && tempoValue <= maxTempo,
+                   let symbolIndex = tempoFullSymbols.firstIndex(of: tempoFullSymbol) {
+                    tempoSymbol = tempoDisplaySymbols[symbolIndex]
+                }
+            }
+        }
+        
+        return tempoSymbol
     }
     
     private func setupControls() {
@@ -208,12 +171,23 @@ class PlayViewController: UIViewController {
         }
     }
     
-    private func loadSheetImage() {
+    private func loadSheetImage(with imageName: String) {
         if let rootPath = Utility.getRootPath(),
-           let imageName = navigationItem.title,
            let image2 = UIImage(contentsOfFile: "\(rootPath)/\(imageName).png") {
             imageView.image = image2
             layoutImageView()
+        }
+    }
+    
+    private func loadCurrentSheetImage() {
+        if let imageName = navigationItem.title {
+            loadSheetImage(with: imageName)
+        }
+    }
+    
+    private func loadNextSheetImage() {
+        if let nextPageImageName = getNewTitle() {
+            loadSheetImage(with: nextPageImageName)
         }
     }
     
@@ -222,7 +196,7 @@ class PlayViewController: UIViewController {
         stopButton.isHidden = false
         stopMaskFlag = false
         
-        animateMask()
+        startAnimateMask()
     }
     
     @IBAction func stop(_ sender: Any) {
@@ -232,7 +206,33 @@ class PlayViewController: UIViewController {
         mask.frame = .zero
     }
     
-    private func animateMask() {
+    // test1 -> test2
+    private func getNewTitle() -> String? {
+        if let currentTitle = navigationItem.title,
+           let pageIndexCharactor = currentTitle.last,
+           let pageIndex = Int(String(pageIndexCharactor)) {
+            let titlePrefixIndex = currentTitle.index(currentTitle.startIndex, offsetBy: currentTitle.count - 1)
+            let titlePrefix = currentTitle.substring(to: titlePrefixIndex)
+            let newTitle = titlePrefix + String(pageIndex + 1)
+            if let rootPath = Utility.getRootPath() {
+                let newPath = "\(rootPath)/\(newTitle).png"
+                if FileManager.default.fileExists(atPath: newPath) {
+                    return newTitle
+                }
+            }
+        }
+        return nil
+    }
+    
+    private func hasNextPage() -> Bool {
+        if let _ = getNewTitle() {
+            return true
+        }
+        
+        return false
+    }
+    
+    private func startAnimateMask() {
         if let tempoString = tempoInput.text,
            let tempo = Double(tempoString),
            let meterString = meterInput.text,
@@ -267,7 +267,14 @@ class PlayViewController: UIViewController {
                             let meterIndexInBar = meterIndex % meterPerBar + 1
                             if meterIndexInBar == 1 { // first meter in a bar
                                 if let barFrame = self.barFrames[realBarIndex] {
-                                    self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.imageView.frame.size)
+                                    if realBarIndex == totalBarCount && self.hasNextPage() {
+                                        // load the next page at the beginning of the last bar of the previous page so the the user has time to read the first bar of the new page
+                                        self.mask.frame = .zero
+                                        self.loadNextSheetImage()
+                                    } else {
+                                        self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.imageView.frame.size)
+                                    }
+                                    
                                 }
                             } else {
 //                                print("meter \(meterIndexInBar) in bar \(realBarIndex)")
@@ -275,8 +282,17 @@ class PlayViewController: UIViewController {
                         }
                         
                         meterIndex += 1
-                        animateMask()
-                        
+                        if meterIndex == totalMeters,
+                           let newTitle = self.getNewTitle() {
+                            self.isFirstPage = false
+                            self.navigationItem.title = newTitle
+                            self.loadJsonFile()
+                            // load the next page at the beginning of the last bar of the previous page, not the end of the last bar
+                            // self.loadSheetImage()
+                            self.startAnimateMask()
+                        } else {
+                            animateMask()
+                        }
                     } else {
                         self.stop(UIButton())
                     }
@@ -347,23 +363,6 @@ extension PlayViewController: UIPickerViewDataSource {
 }
 
 extension PlayViewController: UITextFieldDelegate {
-    
-    func getTempoSymbol(from tempoString: String?) -> String? {
-        var tempoSymbol: String?
-        if let tempoString = tempoString,
-           let tempoValue = Int(tempoString) {
-            for (tempoFullSymbol, tempoInfo) in tempoValues {
-                if let minTempo = tempoInfo["min"],
-                   let maxTempo = tempoInfo["max"],
-                   tempoValue >= minTempo && tempoValue <= maxTempo,
-                   let symbolIndex = tempoFullSymbols.firstIndex(of: tempoFullSymbol) {
-                    tempoSymbol = tempoDisplaySymbols[symbolIndex]
-                }
-            }
-        }
-        
-        return tempoSymbol
-    }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if let tempoSymbol = getTempoSymbol(from: textField.text) {
