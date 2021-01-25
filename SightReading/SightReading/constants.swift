@@ -9,3 +9,7 @@ import Foundation
 import UIKit
 
 let photoCollectionWH: CGFloat = 128
+let basicInfoKey = "basic info"
+let tempoKey = "tempo"
+let meterKey = "meter"
+let barFramesKey = "bar frames"

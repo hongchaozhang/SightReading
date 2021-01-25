@@ -91,7 +91,8 @@ class AddNewViewController: UIViewController {
             if let rootPath = Utility.getRootPath() {
                 let jsonPath = "\(rootPath)/\(jsonFileName).json"
                 print("image path: \(jsonPath)")
-                if let jsonData = try? NSKeyedArchiver.archivedData(withRootObject: barFrames, requiringSecureCoding: false) {
+                let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: barFrames]
+                if let jsonData = try? NSKeyedArchiver.archivedData(withRootObject: jsonDic, requiringSecureCoding: false) {
                     FileManager.default.createFile(atPath: jsonPath, contents: jsonData, attributes: nil)
                 }
             }

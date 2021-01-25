@@ -74,18 +74,18 @@
 		BA65F7EB25BACCED009A7FE5 /* SightReading */ = {
 			isa = PBXGroup;
 			children = (
+				BA65F7F025BACCED009A7FE5 /* ViewController.swift */,
 				BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */,
-				BA65F80325BACDAD009A7FE5 /* constants.swift */,
-				BA65F80425BACDAD009A7FE5 /* Mask.swift */,
-				BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */,
 				BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */,
 				BA65F80625BACDAD009A7FE5 /* PhotoCollectionViewLayout.swift */,
+				BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */,
 				BA65F80125BACDAD009A7FE5 /* PlayViewController.swift */,
-				BA65F80225BACDAD009A7FE5 /* Resource.bundle */,
+				BA65F80325BACDAD009A7FE5 /* constants.swift */,
 				BA65F80525BACDAD009A7FE5 /* Utility.swift */,
+				BA65F80425BACDAD009A7FE5 /* Mask.swift */,
+				BA65F80225BACDAD009A7FE5 /* Resource.bundle */,
 				BA65F7EC25BACCED009A7FE5 /* AppDelegate.swift */,
 				BA65F7EE25BACCED009A7FE5 /* SceneDelegate.swift */,
-				BA65F7F025BACCED009A7FE5 /* ViewController.swift */,
 				BA65F7F225BACCED009A7FE5 /* Main.storyboard */,
 				BA65F7F525BACCEE009A7FE5 /* Assets.xcassets */,
 				BA65F7F725BACCEE009A7FE5 /* LaunchScreen.storyboard */,

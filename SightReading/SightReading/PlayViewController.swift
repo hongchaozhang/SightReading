@@ -83,6 +83,7 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var mask: Mask!
     
+    private var sheetBasicInfo = [String: String]()
     private var barFrames = [Int: CGRect]()
     private let barCountBeforeBegin = 2
     
@@ -100,9 +101,49 @@ class PlayViewController: UIViewController {
         loadSheetImage()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        restoreSettings()
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stop(UIButton())
+        storeSettings()
+    }
+    
+    private func restoreSettings() {
+        if let tempo = sheetBasicInfo[tempoKey],
+           let _ = Int(tempo) {
+            tempoInput.text = tempo
+        }
+        if let meter = sheetBasicInfo[meterKey],
+           let _ = Int(meter) {
+            meterInput.text = meter
+        }
+    }
+    
+    private func storeSettings() {
+        guard let tempoString = tempoInput.text,
+              let _ = Int(tempoString) else {
+            return
+        }
+        guard let meterString = meterInput.text,
+              let _ = Int(meterString) else {
+            return
+        }
+        
+        sheetBasicInfo[tempoKey] = tempoString
+        sheetBasicInfo[meterKey] = meterString
+        
+        if let rootPath = Utility.getRootPath(),
+           let jsonFileName = navigationItem.title {
+            let jsonPath = "\(rootPath)/\(jsonFileName).json"
+            let jsonDic: [String: Any] = [basicInfoKey: sheetBasicInfo, barFramesKey: barFrames]
+            if let jsonData = try? NSKeyedArchiver.archivedData(withRootObject: jsonDic, requiringSecureCoding: false) {
+                FileManager.default.createFile(atPath: jsonPath, contents: jsonData, attributes: nil)
+            }
+        }
     }
     
     private func setupControls() {
@@ -156,10 +197,14 @@ class PlayViewController: UIViewController {
         if let rootPath = Utility.getRootPath(),
            let jsonName = navigationItem.title,
            let jsonData = FileManager.default.contents(atPath: "\(rootPath)/\(jsonName).json"),
-           let jsonObject = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
-           let barFrames = jsonObject as? [Int: CGRect] {
-            self.barFrames =  barFrames
-            return
+           let jsonObjectAny = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
+           let jsonObject = jsonObjectAny as? [String: Any] {
+            if let sheetBasicInfo = jsonObject[basicInfoKey] as? [String: String] {
+                self.sheetBasicInfo = sheetBasicInfo
+            }
+            if let barFrames = jsonObject[barFramesKey] as? [Int: CGRect] {
+                self.barFrames =  barFrames
+            }
         }
     }
     
