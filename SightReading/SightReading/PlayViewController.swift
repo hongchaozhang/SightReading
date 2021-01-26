@@ -36,7 +36,7 @@ class PlayViewController: UIViewController {
     private var firstMeterId: SystemSoundID = 1000;
     private var nonFirstMeterId: SystemSoundID = 1000
     
-    
+    // MARK: - override super functions
     override func viewDidLoad() {
         super.viewDidLoad()
         setupControls()
@@ -56,6 +56,41 @@ class PlayViewController: UIViewController {
         storeSettings()
     }
     
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        layoutImageView()
+        mask.frame = .zero
+    }
+    
+    // MARK: - private functions
+    private func getTempoSymbol(from tempoString: String?) -> String? {
+        var tempoSymbol: String?
+        if let tempoString = tempoString,
+           let tempoValue = Int(tempoString) {
+            for (tempoFullSymbol, tempoInfo) in tempoValues {
+                if let minTempo = tempoInfo["min"],
+                   let maxTempo = tempoInfo["max"],
+                   tempoValue >= minTempo && tempoValue <= maxTempo,
+                   let symbolIndex = tempoFullSymbols.firstIndex(of: tempoFullSymbol) {
+                    tempoSymbol = tempoDisplaySymbols[symbolIndex]
+                }
+            }
+        }
+        
+        return tempoSymbol
+    }
+    
+    private func layoutImageView() {
+        guard let imageSize = imageView.image?.size else {
+            return
+        }
+
+        let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
+        imageViewInnerContainer.frame = innerContainerFrame
+        imageView.frame = imageViewInnerContainer.bounds
+    }
+    
+    // MARK: -
     private func restoreSettings() {
         if let tempo = sheetBasicInfo[tempoKey],
            let tempoSymbol = getTempoSymbol(from: tempo) {
@@ -92,23 +127,8 @@ class PlayViewController: UIViewController {
             }
         }
     }
-    private func getTempoSymbol(from tempoString: String?) -> String? {
-        var tempoSymbol: String?
-        if let tempoString = tempoString,
-           let tempoValue = Int(tempoString) {
-            for (tempoFullSymbol, tempoInfo) in tempoValues {
-                if let minTempo = tempoInfo["min"],
-                   let maxTempo = tempoInfo["max"],
-                   tempoValue >= minTempo && tempoValue <= maxTempo,
-                   let symbolIndex = tempoFullSymbols.firstIndex(of: tempoFullSymbol) {
-                    tempoSymbol = tempoDisplaySymbols[symbolIndex]
-                }
-            }
-        }
-        
-        return tempoSymbol
-    }
     
+    // MARK: - control setup
     private func setupControls() {
         setupMetricInput()
         setupTempoControls()
@@ -147,6 +167,7 @@ class PlayViewController: UIViewController {
         
     }
     
+    // MARK: - load resources
     private func createSoundIDs() {
         if let audioUrl = Bundle.main.url(forResource: "FirstMeter", withExtension: "wav", subdirectory: "Resource.bundle")  {
             AudioServicesCreateSystemSoundID(audioUrl as CFURL, &firstMeterId)
@@ -190,7 +211,11 @@ class PlayViewController: UIViewController {
             loadSheetImage(with: nextPageImageName)
         }
     }
+    // MARK: - support multiple pages
     
+    // MARK: - support full screen image view
+    
+    // MARK: - animations
     @IBAction func start(_ sender: Any) {
         startButton.isHidden = true
         stopButton.isHidden = false
@@ -303,24 +328,9 @@ class PlayViewController: UIViewController {
 
         }
     }
-    
-    func layoutImageView() {
-        guard let imageSize = imageView.image?.size else {
-            return
-        }
-
-        let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
-        imageViewInnerContainer.frame = innerContainerFrame
-        imageView.frame = imageViewInnerContainer.bounds
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        layoutImageView()
-        mask.frame = .zero
-    }
 }
 
+// MARK: - UIPickerViewDelegate
 extension PlayViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView == tempoPickerView {
@@ -347,6 +357,7 @@ extension PlayViewController: UIPickerViewDelegate {
     }
 }
 
+// MARK: - UIPickerViewDataSource
 extension PlayViewController: UIPickerViewDataSource {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -362,6 +373,7 @@ extension PlayViewController: UIPickerViewDataSource {
     }
 }
 
+// MARK: - UITextFieldDelegate
 extension PlayViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

@@ -24,11 +24,35 @@ class AddNewViewController: UIViewController {
     private var startPoint = CGPoint.zero
     private var endPoint = CGPoint.zero
     
+    // MARK: - override super functions
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setNavigationBar()
         addPanGesture()
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            startPoint = touch.location(in: imageView) // pan gesture start point a an offset
+        }
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        layoutImageView()
+        mask.frame = .zero
+    }
+    
+    // MARK: - private functions
+    private func layoutImageView() {
+        guard let imageSize = imageView.image?.size else {
+            return
+        }
+
+        let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
+        imageViewInnerContainer.frame = innerContainerFrame
+        imageView.frame = imageViewInnerContainer.bounds
     }
     
     private func addMask() {
@@ -65,6 +89,7 @@ class AddNewViewController: UIViewController {
         }
     }
     
+    // MARK: - handlers
     private func getFileName() -> String? {
         if let sheetName = sheetNameInput.text, sheetName != "" {
             return sheetName
@@ -72,8 +97,6 @@ class AddNewViewController: UIViewController {
         
         return nil
     }
-    
-
     
     private func saveFiles() {
         func saveImageFile() {
@@ -145,30 +168,9 @@ class AddNewViewController: UIViewController {
             navigationController?.pushViewController(photoCollectionVC, animated: true)
         }
     }
-    
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            startPoint = touch.location(in: imageView) // pan gesture start point a an offset
-        }
-    }
-    
-    func layoutImageView() {
-        guard let imageSize = imageView.image?.size else {
-            return
-        }
-
-        let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
-        imageViewInnerContainer.frame = innerContainerFrame
-        imageView.frame = imageViewInnerContainer.bounds
-    }
-    
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        layoutImageView()
-        mask.frame = .zero
-    }
 }
 
+// MARK: - PhotoCollectionViewControllerDelegate
 extension AddNewViewController: PhotoCollectionViewControllerDelegate {
     func set(image: UIImage) {
         imageView.image = image
