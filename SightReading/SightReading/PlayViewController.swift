@@ -21,6 +21,7 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var imageViewInnerContainer: UIView!
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var mask: Mask!
+    private var isPlaying = false
     
     private var sheetBasicInfo = [String: String]()
     private var barFrames = [Int: CGRect]()
@@ -48,6 +49,7 @@ class PlayViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         restoreSettings()
+        isPlaying = false
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -87,7 +89,11 @@ class PlayViewController: UIViewController {
 
         let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
         imageViewInnerContainer.frame = innerContainerFrame
-        imageView.frame = imageViewInnerContainer.bounds
+        imageView.frame = CGRect(origin: .zero, size: innerContainerFrame.size)
+        imageViewInnerContainer.alpha = 0
+        UIView.animate(withDuration: 0.2) { // 0.2: can not be set too big, or when the page is automatically changed, there may be some delay to show the new page, and there is no time for the user to read the new music notes
+            self.imageViewInnerContainer.alpha = 1.0
+        }
     }
     
     // MARK: -
@@ -207,38 +213,25 @@ class PlayViewController: UIViewController {
     }
     
     private func loadNextSheetImage() {
-        if let nextPageImageName = getNewTitle() {
+        if let nextPageImageName = getNewTitle(isNext: true) {
+            loadSheetImage(with: nextPageImageName)
+        }
+    }
+    
+    private func loadPriviousSheetImage() {
+        if let nextPageImageName = getNewTitle(isNext: false) {
             loadSheetImage(with: nextPageImageName)
         }
     }
     // MARK: - support multiple pages
-    
-    // MARK: - support full screen image view
-    
-    // MARK: - animations
-    @IBAction func start(_ sender: Any) {
-        startButton.isHidden = true
-        stopButton.isHidden = false
-        stopMaskFlag = false
-        
-        startAnimateMask()
-    }
-    
-    @IBAction func stop(_ sender: Any) {
-        stopButton.isHidden = true
-        startButton.isHidden = false
-        stopMaskFlag = true
-        mask.frame = .zero
-    }
-    
     // test1 -> test2
-    private func getNewTitle() -> String? {
+    private func getNewTitle(isNext: Bool) -> String? {
         if let currentTitle = navigationItem.title,
            let pageIndexCharactor = currentTitle.last,
            let pageIndex = Int(String(pageIndexCharactor)) {
             let titlePrefixIndex = currentTitle.index(currentTitle.startIndex, offsetBy: currentTitle.count - 1)
             let titlePrefix = currentTitle.substring(to: titlePrefixIndex)
-            let newTitle = titlePrefix + String(pageIndex + 1)
+            let newTitle = titlePrefix + String(isNext ? (pageIndex+1) : (pageIndex-1))
             if let rootPath = Utility.getRootPath() {
                 let newPath = "\(rootPath)/\(newTitle).png"
                 if FileManager.default.fileExists(atPath: newPath) {
@@ -250,11 +243,58 @@ class PlayViewController: UIViewController {
     }
     
     private func hasNextPage() -> Bool {
-        if let _ = getNewTitle() {
+        if let _ = getNewTitle(isNext: true) {
             return true
         }
-        
         return false
+    }
+    
+    private func hasPreviousPage() -> Bool {
+        if let _ = getNewTitle(isNext: false) {
+            return true
+        }
+        return false
+    }
+    
+    @IBAction func imageRightSwiped(_ sender: UISwipeGestureRecognizer) {
+        // change to the privouse page
+        if !isPlaying, let newTitle = getNewTitle(isNext: false) {
+            navigationItem.title = newTitle
+            loadJsonFile()
+            loadCurrentSheetImage()
+        }
+    }
+    
+    @IBAction func imageLeftSwiped(_ sender: UISwipeGestureRecognizer) {
+        // change to the next page
+        if !isPlaying, let newTitle = getNewTitle(isNext: true) {
+            navigationItem.title = newTitle
+            loadJsonFile()
+            loadCurrentSheetImage()
+        }
+    }
+    
+    // MARK: - support full screen image view
+    @IBAction func imageDoubleTapped(_ sender: UITapGestureRecognizer) {
+        print("image double tapped")
+    }
+    
+    // MARK: - animations
+    @IBAction func start(_ sender: Any) {
+        startButton.isHidden = true
+        stopButton.isHidden = false
+        stopMaskFlag = false
+        isPlaying = true
+        
+        startAnimateMask()
+    }
+    
+    @IBAction func stop(_ sender: Any) {
+        stopButton.isHidden = true
+        startButton.isHidden = false
+        stopMaskFlag = true
+        isPlaying = false
+        mask.frame = .zero
     }
     
     private func startAnimateMask() {
@@ -308,7 +348,7 @@ class PlayViewController: UIViewController {
                         
                         meterIndex += 1
                         if meterIndex == totalMeters,
-                           let newTitle = self.getNewTitle() {
+                           let newTitle = self.getNewTitle(isNext: true) {
                             self.isFirstPage = false
                             self.navigationItem.title = newTitle
                             self.loadJsonFile()

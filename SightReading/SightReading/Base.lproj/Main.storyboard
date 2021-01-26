@@ -122,6 +122,12 @@
                                             </view>
                                         </subviews>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                        <gestureRecognizers/>
+                                        <connections>
+                                            <outletCollection property="gestureRecognizers" destination="EgP-6S-LTp" appends="YES" id="ERe-y8-ruJ"/>
+                                            <outletCollection property="gestureRecognizers" destination="k7I-AQ-gU2" appends="YES" id="vbg-va-6Sa"/>
+                                            <outletCollection property="gestureRecognizers" destination="4xa-dw-tuS" appends="YES" id="d2h-Y6-R1g"/>
+                                        </connections>
                                     </view>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -155,6 +161,21 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="w2u-6G-qTa" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <tapGestureRecognizer numberOfTapsRequired="2" id="EgP-6S-LTp" userLabel="Double Tap Gesture Recognizer">
+                    <connections>
+                        <action selector="imageDoubleTapped:" destination="9sm-EO-BIo" id="CzY-UW-JFA"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <swipeGestureRecognizer direction="right" id="k7I-AQ-gU2" userLabel="Right Swipe Gesture Recognizer">
+                    <connections>
+                        <action selector="imageRightSwiped:" destination="9sm-EO-BIo" id="zbe-3B-b3f"/>
+                    </connections>
+                </swipeGestureRecognizer>
+                <swipeGestureRecognizer direction="left" id="4xa-dw-tuS" userLabel="Left Swipe Gesture Recognizer">
+                    <connections>
+                        <action selector="imageLeftSwiped:" destination="9sm-EO-BIo" id="cQa-Rb-F0E"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1652.5925925925924" y="471.66666666666663"/>
         </scene>
