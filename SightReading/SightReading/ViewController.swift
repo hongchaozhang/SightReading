@@ -46,6 +46,7 @@ class ViewController: UIViewController {
                 }
             }
         }
+        sheetNames.sort()
     }
     
     private func setTableViewEditMode(_ isEditing: Bool) {

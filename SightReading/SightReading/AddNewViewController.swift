@@ -65,20 +65,20 @@ class AddNewViewController: UIViewController {
         }
     }
     
-    private func getFileName() -> String {
+    private func getFileName() -> String? {
         if let sheetName = sheetNameInput.text, sheetName != "" {
             return sheetName
-        } else {
-            return "empty sheet name"
         }
+        
+        return nil
     }
     
 
     
     private func saveFiles() {
         func saveImageFile() {
-            let imageName = getFileName()
-            if let rootPath = Utility.getRootPath() {
+            if let rootPath = Utility.getRootPath(),
+               let imageName = getFileName() {
                 let imagePath = "\(rootPath)/\(imageName).png"
                 print("image path: \(imagePath)")
                 if let image = imageView.image, let imageData = image.pngData() {
@@ -88,8 +88,8 @@ class AddNewViewController: UIViewController {
         }
         
         func saveJsonFile() {
-            let jsonFileName = getFileName()
-            if let rootPath = Utility.getRootPath() {
+            if let rootPath = Utility.getRootPath(),
+               let jsonFileName = getFileName() {
                 let jsonPath = "\(rootPath)/\(jsonFileName).json"
                 print("image path: \(jsonPath)")
                 let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: barFrames]
@@ -105,24 +105,30 @@ class AddNewViewController: UIViewController {
     
     @objc func addNewDone() {
         if let rootPath = Utility.getRootPath() {
-            let fileName = getFileName()
-            let jsonFilePath = "\(rootPath)/\(fileName).json"
-            let imageFilePath = "\(rootPath)/\(fileName).png"
-            
-            if FileManager.default.fileExists(atPath: jsonFilePath) || FileManager.default.fileExists(atPath: imageFilePath) {
-                let alert = UIAlertController(title: "Warning", message: "There is already files named \(fileName). Clike OK will override it.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
-                    self.saveFiles()
-                    self.navigationController?.popViewController(animated: true)
-                }))
-                alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-                self.present(alert, animated: true, completion: nil)
+            if let fileName = getFileName() {
+                let jsonFilePath = "\(rootPath)/\(fileName).json"
+                let imageFilePath = "\(rootPath)/\(fileName).png"
+                
+                if FileManager.default.fileExists(atPath: jsonFilePath) || FileManager.default.fileExists(atPath: imageFilePath) {
+                    let alert = UIAlertController(title: "Warning", message: "There is already files named \(fileName). Clike OK will override it.", preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
+                        self.saveFiles()
+                        self.navigationController?.popViewController(animated: true)
+                    }))
+                    alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                } else {
+                    saveFiles()
+                    navigationController?.popViewController(animated: true)
+                }
             } else {
-                saveFiles()
-                navigationController?.popViewController(animated: true)
+                let alert = UIAlertController(title: "Warning", message: "A name should be set before saving.", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                self.present(alert, animated: true, completion: nil)
             }
         }
     }
+    
     @IBAction func minusBarIndex(_ sender: Any) {
         if let barIndexString = barIndexInput.text, let barIndex = Int(barIndexString), barIndex > 1 {
             barIndexInput.text = String(barIndex - 1)
