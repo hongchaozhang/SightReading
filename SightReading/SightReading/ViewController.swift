@@ -19,7 +19,6 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         fileTableView.delegate = self
         fileTableView.dataSource = self
     }
@@ -29,7 +28,6 @@ class ViewController: UIViewController {
         loadFileNames()
         loadTags()
         fileTableView.reloadData()
-        setTableViewEditMode(false)
     }
     
     private func loadFileNames() {
@@ -63,23 +61,6 @@ class ViewController: UIViewController {
     }
     
     // MARK: - button callbacks
-    private func setTableViewEditMode(_ isEditing: Bool) {
-        if isEditing == true {
-            self.fileTableView.isEditing = true
-            self.navigationItem.leftBarButtonItem?.title = "Done"
-        } else {
-            self.fileTableView.isEditing = false
-            self.navigationItem.leftBarButtonItem?.title = "Edit"
-        }
-    }
-
-    @IBAction func editTapped(_ sender: Any) {
-        if self.fileTableView.isEditing == true {
-            setTableViewEditMode(false)
-        } else {
-            setTableViewEditMode(true)
-        }
-    }
     @IBAction func addNewTapped(_ sender: UIBarButtonItem) {
         if let addNewVC = storyBoard.instantiateViewController(identifier: "AddNew") as? AddNewViewController {
             navigationController?.pushViewController(addNewVC, animated: true)
@@ -131,7 +112,7 @@ extension ViewController: UITableViewDelegate {
         let editAction = UITableViewRowAction(style: .default, title: "Edit Tags") { (action, indexPath) in
             self.editTags(for: indexPath)
         }
-        editAction.backgroundColor = .blue
+        editAction.backgroundColor = UIColor(displayP3Red: 60/255, green: 148/255, blue: 1.0, alpha: 1.0)
         deleteAction.backgroundColor = .red
 
         return [deleteAction, editAction]
@@ -142,14 +123,13 @@ extension ViewController: UITableViewDelegate {
 // MARK: - UITableViewDataSource
 extension ViewController: UITableViewDataSource {
     
-    private func getCellText(for fileName: String) -> String {
-        var cellText = fileName
+    private func getTagListString(for fileName: String) -> String {
+        var cellText = ""
         if let tags = allFileTags[fileName] {
-            cellText += " | "
             for tag in tags {
                 cellText += tag
                 if tags.last != tag {
-                    cellText += ", "
+                    cellText += " | "
                 }
             }
         }
@@ -166,10 +146,11 @@ extension ViewController: UITableViewDataSource {
         if let _ = cell {
             
         } else {
-            cell = UITableViewCell(style: .default, reuseIdentifier: fileTableViewCellIdentifier)
+            cell = UITableViewCell(style: .value1, reuseIdentifier: fileTableViewCellIdentifier)
         }
         
-        cell?.textLabel?.text = getCellText(for: fileNames[indexPath.row])
+        cell?.textLabel?.text = fileNames[indexPath.row]
+        cell?.detailTextLabel?.text = getTagListString(for: fileNames[indexPath.row])
         
         return cell!
     }
@@ -180,8 +161,13 @@ extension ViewController: UITableViewDataSource {
 // MARK: - EditTagViewControllerDelegate
 extension ViewController: EditTagViewControllerDelegate {
     func confirmEditingTags(with allTags: [String], selectedTags: [String], fileName: String) {
-        UserDefaults.standard.setValue(allTags, forKey: allTagsKey)
-        UserDefaults.standard.setValue(selectedTags, forKey: fileName)
+        if allTags.count > 0 {
+            UserDefaults.standard.setValue(allTags, forKey: allTagsKey)
+        }
+        if selectedTags.count > 0 {
+            UserDefaults.standard.setValue(selectedTags, forKey: fileName)
+        }
+        
         self.allTags = allTags
         self.allFileTags[fileName] = selectedTags
         self.fileTableView.reloadData()

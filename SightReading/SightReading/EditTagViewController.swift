@@ -27,6 +27,7 @@ class EditTagViewController: UIViewController {
         super.viewDidLoad()
         tagList.delegate = self
         tagList.dataSource = self
+        tagInput.delegate = self
     }
     
     @IBAction func doneButtonTapped() {
@@ -100,6 +101,13 @@ extension EditTagViewController: UITableViewDataSource {
         }
         return cell!
     }
-    
+}
+
+// MARK: - UITextFieldDelegate
+extension EditTagViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        addButtonTapped()
+        return true
+    }
     
 }
