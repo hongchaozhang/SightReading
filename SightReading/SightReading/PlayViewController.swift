@@ -12,6 +12,8 @@ import AVFoundation
 class PlayViewController: UIViewController {
     @IBOutlet weak var startButton: UIButton!
     @IBOutlet weak var stopButton: UIButton!
+    
+    @IBOutlet weak var controlsContainerStack: UIStackView!
     @IBOutlet weak var tempoSelector: UITextField!
     private var tempoPickerView: UIPickerView!
     @IBOutlet weak var tempoInput: UITextField!
@@ -102,11 +104,12 @@ class PlayViewController: UIViewController {
            let tempoSymbol = getTempoSymbol(from: tempo) {
             tempoInput.text = tempo
             tempoSelector.text = tempoSymbol
-            tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
+            tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: false)
         }
         if let meter = sheetBasicInfo[meterKey],
            let _ = Int(meter) {
             meterInput.text = meter
+            meterPickerView.selectRow(meterValues.firstIndex(of: meter)!, inComponent: 0, animated: false)
         }
         isFirstPage = true
     }
@@ -276,7 +279,9 @@ class PlayViewController: UIViewController {
     
     // MARK: - support full screen image view
     @IBAction func imageDoubleTapped(_ sender: UITapGestureRecognizer) {
-        print("image double tapped")
+        if let isHidden = navigationController?.navigationBar.isHidden {
+            navigationController?.setNavigationBarHidden(!isHidden, animated: true)
+        }
     }
     
     // MARK: - animations

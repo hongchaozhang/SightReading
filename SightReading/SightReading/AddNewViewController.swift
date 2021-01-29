@@ -172,8 +172,9 @@ class AddNewViewController: UIViewController {
 
 // MARK: - PhotoCollectionViewControllerDelegate
 extension AddNewViewController: PhotoCollectionViewControllerDelegate {
-    func set(image: UIImage) {
+    func set(image: UIImage, and name: String?) {
         imageView.image = image
+        sheetNameInput.text = name ?? ""
         layoutImageView()
         barFrames = [Int: CGRect]()
         mask.frame = CGRect.zero

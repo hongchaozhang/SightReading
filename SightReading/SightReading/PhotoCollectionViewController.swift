@@ -10,7 +10,7 @@ import UIKit
 import Photos
 
 protocol PhotoCollectionViewControllerDelegate {
-    func set(image: UIImage)
+    func set(image: UIImage, and name: String?)
 }
 
 class PhotoCollectionViewController: UIViewController {
@@ -59,14 +59,42 @@ class PhotoCollectionViewController: UIViewController {
 
 
 extension PhotoCollectionViewController: UICollectionViewDelegate {
+//    func getImageName(from path: String) -> String? {
+//        if let lastSlashIndex = path.lastIndex(of: "/") {
+//            let lastSlashIndexAfter = path.index(after: lastSlashIndex)
+//            let imageNameWithType = path.substring(from: lastSlashIndexAfter)
+//            if let lastDotIndex = imageNameWithType.lastIndex(of: ".") {
+//                let imageName = imageNameWithType.substring(to: lastDotIndex)
+//                return imageName
+//            }
+//        }
+//
+//        return nil
+//    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         print("item: \(indexPath.item)")
         let assert = allPhotos.object(at: indexPath.item)
         PHImageManager.default().requestImage(for: assert, targetSize: CGSize(width: assert.pixelWidth, height: assert.pixelHeight), contentMode: .aspectFill, options: .none) { (image, dic) in
             if let image = image {
-                self.delegate?.set(image: image)
+                self.delegate?.set(image: image, and: nil)
             }
         }
+//        PHImageManager.default().requestImageDataAndOrientation(for: assert, options: nil) { (imageData, fileUTIKey, orientation, info) in
+//            if let imageData = imageData,
+//               let image = UIImage(data: imageData) {
+//                if let info = info,
+//                   let pathAny = info["PHImageFileURLKey"],
+//                   let pathURL = pathAny as? NSURL,
+//                   let path = pathURL.absoluteString,
+//                   let imageName = self.getImageName(from: path) {
+//                    self.delegate?.set(image: image, and: imageName)
+//                } else {
+//                    self.delegate?.set(image: image, and: nil)
+//                }
+//
+//            }
+//        }
         navigationController?.popViewController(animated: true)
     }
 }

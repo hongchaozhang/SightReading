@@ -22,6 +22,7 @@
 		BA65F81025BACDAE009A7FE5 /* PhotoCollectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */; };
 		BA65F81125BACDAE009A7FE5 /* PhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */; };
 		BA65F81225BACDAE009A7FE5 /* AddNewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */; };
+		BA65F84D25C3AD7E009A7FE5 /* EditTagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +43,7 @@
 		BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionCell.swift; sourceTree = "<group>"; };
 		BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewController.swift; sourceTree = "<group>"; };
 		BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddNewViewController.swift; sourceTree = "<group>"; };
+		BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTagViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 				BA65F80625BACDAD009A7FE5 /* PhotoCollectionViewLayout.swift */,
 				BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */,
 				BA65F80125BACDAD009A7FE5 /* PlayViewController.swift */,
+				BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */,
 				BA65F80325BACDAD009A7FE5 /* constants.swift */,
 				BA65F80525BACDAD009A7FE5 /* Utility.swift */,
 				BA65F80425BACDAD009A7FE5 /* Mask.swift */,
@@ -168,6 +171,7 @@
 				BA65F81225BACDAE009A7FE5 /* AddNewViewController.swift in Sources */,
 				BA65F80E25BACDAE009A7FE5 /* Utility.swift in Sources */,
 				BA65F80F25BACDAE009A7FE5 /* PhotoCollectionViewLayout.swift in Sources */,
+				BA65F84D25C3AD7E009A7FE5 /* EditTagViewController.swift in Sources */,
 				BA65F80A25BACDAE009A7FE5 /* PlayViewController.swift in Sources */,
 				BA65F81025BACDAE009A7FE5 /* PhotoCollectionCell.swift in Sources */,
 				BA65F7F125BACCED009A7FE5 /* ViewController.swift in Sources */,
