@@ -18,17 +18,45 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="UQX-2k-YWW">
-                                <rect key="frame" x="20" y="70" width="770" height="990"/>
+                                <rect key="frame" x="20" y="134" width="770" height="926"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                             </tableView>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="fiN-9N-fdm">
+                                <rect key="frame" x="20" y="70" width="770" height="56"/>
+                                <subviews>
+                                    <searchBar contentMode="redraw" searchBarStyle="minimal" translatesAutoresizingMaskIntoConstraints="NO" id="Qge-Nq-LLi">
+                                        <rect key="frame" x="0.0" y="0.0" width="242" height="56"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </searchBar>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tag:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aiu-Hh-oIP">
+                                        <rect key="frame" x="262" y="0.0" width="32.5" height="56"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="cUI-IG-EIh">
+                                        <rect key="frame" x="314.5" y="0.0" width="455.5" height="56"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Qge-Nq-LLi" firstAttribute="leading" secondItem="fiN-9N-fdm" secondAttribute="leading" id="3FM-uV-d7H"/>
+                                    <constraint firstItem="cUI-IG-EIh" firstAttribute="leading" secondItem="aiu-Hh-oIP" secondAttribute="trailing" constant="20" id="Z12-HM-JQe"/>
+                                    <constraint firstItem="aiu-Hh-oIP" firstAttribute="leading" secondItem="Qge-Nq-LLi" secondAttribute="trailing" constant="20" id="j1c-9o-f4q"/>
+                                </constraints>
+                            </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="UQX-2k-YWW" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="1hN-if-Ybe"/>
+                            <constraint firstItem="UQX-2k-YWW" firstAttribute="top" secondItem="fiN-9N-fdm" secondAttribute="bottom" constant="8" symbolic="YES" id="8Iv-YT-srx"/>
                             <constraint firstItem="UQX-2k-YWW" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Kba-FM-Eth"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="UQX-2k-YWW" secondAttribute="bottom" constant="20" id="Lyf-ln-VId"/>
+                            <constraint firstItem="fiN-9N-fdm" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="Z1t-UO-bU0"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="UQX-2k-YWW" secondAttribute="trailing" constant="20" id="iXs-kg-wV0"/>
+                            <constraint firstItem="fiN-9N-fdm" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="20" id="wcn-9X-thF"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fiN-9N-fdm" secondAttribute="trailing" constant="20" id="x1F-Gl-ifV"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="AOS-7L-PDs">
@@ -40,6 +68,8 @@
                     </navigationItem>
                     <connections>
                         <outlet property="fileTableView" destination="UQX-2k-YWW" id="P4s-XA-SZt"/>
+                        <outlet property="searchBar" destination="Qge-Nq-LLi" id="myE-W8-dMq"/>
+                        <outlet property="tagSelector" destination="cUI-IG-EIh" id="Z7p-Xn-sFN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

@@ -31,7 +31,7 @@ class EditTagViewController: UIViewController {
     }
     
     @IBAction func doneButtonTapped() {
-        delegate?.confirmEditingTags(with: allTags, selectedTags: selectedTags, fileName: fileName)
+        delegate?.confirmEditingTags(with: allTags.sorted(), selectedTags: selectedTags.sorted(), fileName: fileName)
         presentingViewController?.dismiss(animated: true, completion: nil)
     }
     
@@ -107,6 +107,7 @@ extension EditTagViewController: UITableViewDataSource {
 extension EditTagViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         addButtonTapped()
+        textField.resignFirstResponder()
         return true
     }
     

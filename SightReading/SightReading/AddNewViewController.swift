@@ -10,7 +10,7 @@ import UIKit
 import Photos
 
 class AddNewViewController: UIViewController {
-    let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+    private let storyBoard = UIStoryboard(name: "Main", bundle: nil)
     
     @IBOutlet weak var sheetNameInput: UITextField!
     @IBOutlet weak var barIndexInput: UITextField!

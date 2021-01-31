@@ -8,19 +8,65 @@
 import UIKit
 
 class ViewController: UIViewController {
-    let allTagsKey = "ALL_TAGS"
-    var allTags = [String]()
-    var allFileTags = [String: [String]]()
+    private let allTagConstant = "All"
+    private let allTagsKey = "ALL_TAGS"
+    private var allTags = [String]()
+    private var allFileTags = [String: [String]]()
+    
+    private var allTagsForSelector = [String]()
     
     @IBOutlet weak var fileTableView: UITableView!
-    let fileTableViewCellIdentifier = "FILE_TABLE_VIEW_CELL"
-    let storyBoard = UIStoryboard(name: "Main", bundle: nil)
-    var fileNames = [String]()
+    @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var tagSelector: UITextField!
+    private var tagPickerView: UIPickerView!
+    
+    private let fileTableViewCellIdentifier = "FILE_TABLE_VIEW_CELL"
+    private let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+    
+    private var allFileNames = [String]()
+    private var filtedFileNames: [String] {
+        let fileNamesByTagFilter = allFileNames.filter { (fileName) -> Bool in
+            if let selectedTag = tagSelector.text {
+                if selectedTag == allTagConstant {
+                    return true
+                } else {
+                    if let tags = allFileTags[fileName] {
+                        if tags.contains(selectedTag) {
+                            return true
+                        } else {
+                            return false
+                        }
+                    }
+                }
+            }
+            return false
+        }
+        let filteredFileNamesBySearchKeyword = fileNamesByTagFilter.filter { (fileName) -> Bool in
+            if let keyword = searchBar.searchTextField.text, keyword != "" {
+                if fileName.lowercased().contains(keyword.lowercased()) {
+                    return true
+                }
+                if let tags = allFileTags[fileName] {
+                    for tag in tags {
+                        if tag.lowercased().contains(keyword.lowercased()) {
+                            return true
+                        }
+                    }
+                }
+                return false
+            }
+            return true
+        }
+        
+        return filteredFileNamesBySearchKeyword
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         fileTableView.delegate = self
         fileTableView.dataSource = self
+        setupTagSelector()
+        setupSearchBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -30,8 +76,23 @@ class ViewController: UIViewController {
         fileTableView.reloadData()
     }
     
+    private func setupTagSelector() {
+        tagPickerView = UIPickerView()
+        tagPickerView.delegate = self
+        tagPickerView.dataSource = self
+        tagSelector.inputView = tagPickerView
+        
+        tagSelector.text = allTagConstant
+        tagPickerView.selectRow(0, inComponent: 0, animated: false)
+    }
+    
+    private func setupSearchBar() {
+        searchBar.delegate = self
+    }
+    
+    // MARK: - load resources
     private func loadFileNames() {
-        fileNames = [String]()
+        allFileNames = [String]()
         if let rootPath = Utility.getRootPath(),
            let enumerator = FileManager.default.enumerator(atPath: rootPath) {
             for filePath in enumerator {
@@ -39,23 +100,25 @@ class ViewController: UIViewController {
                     let strings = filePath.split(separator: ".")
                     if let fileNameSubSeqence = strings.first  {
                         let fileName = String(fileNameSubSeqence)
-                        if fileName != "DS_Store" && !fileNames.contains(fileName) {
-                            fileNames.append(fileName)
+                        if fileName != "DS_Store" && !allFileNames.contains(fileName) {
+                            allFileNames.append(fileName)
                         }
                     }
                 }
             }
         }
-        fileNames.sort()
+        allFileNames.sort()
     }
     
     private func loadTags() {
         if let allTags = UserDefaults.standard.value(forKey: allTagsKey) as? [String] {
-            self.allTags = allTags
+            self.allTags = allTags.sorted()
+            allTagsForSelector = allTags.sorted()
+            allTagsForSelector.insert(allTagConstant, at: 0)
         }
-        for fileName in fileNames {
+        for fileName in allFileNames {
             if let fileTags = UserDefaults.standard.value(forKey: fileName) as? [String] {
-                allFileTags[fileName] = fileTags
+                allFileTags[fileName] = fileTags.sorted()
             }
         }
     }
@@ -73,7 +136,7 @@ class ViewController: UIViewController {
 extension ViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let playVC = storyBoard.instantiateViewController(identifier: "Play")
-        playVC.navigationItem.title = fileNames[indexPath.row]
+        playVC.navigationItem.title = filtedFileNames[indexPath.row]
         navigationController?.pushViewController(playVC, animated: true)
     }
     
@@ -84,9 +147,9 @@ extension ViewController: UITableViewDelegate {
     private func editTags(for indexPath: IndexPath) {
         if let tagVCOption = storyboard?.instantiateViewController(identifier: "Tags"),
            let tagVC = tagVCOption as? EditTagViewController {
-            tagVC.fileName = fileNames[indexPath.row]
+            tagVC.fileName = filtedFileNames[indexPath.row]
             tagVC.allTags = allTags
-            if let fileTags = allFileTags[fileNames[indexPath.row]] {
+            if let fileTags = allFileTags[filtedFileNames[indexPath.row]] {
                 tagVC.selectedTags = fileTags
             }
             tagVC.delegate = self
@@ -96,13 +159,14 @@ extension ViewController: UITableViewDelegate {
     
     private func deleteItem(at indexPath: IndexPath) {
         if let rootPath = Utility.getRootPath() {
-            let fileName = fileNames[indexPath.row]
+            let fileName = filtedFileNames[indexPath.row]
             try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).png")
             try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).json")
             UserDefaults.standard.removeObject(forKey: fileName)
         }
-        fileNames.remove(at: indexPath.row)
+        allFileNames.remove(at: indexPath.row)
         fileTableView.deleteRows(at: [indexPath], with: .fade)
+        fileTableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -117,7 +181,6 @@ extension ViewController: UITableViewDelegate {
 
         return [deleteAction, editAction]
     }
-    
 }
 
 // MARK: - UITableViewDataSource
@@ -138,7 +201,7 @@ extension ViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return fileNames.count
+        return filtedFileNames.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -149,13 +212,42 @@ extension ViewController: UITableViewDataSource {
             cell = UITableViewCell(style: .value1, reuseIdentifier: fileTableViewCellIdentifier)
         }
         
-        cell?.textLabel?.text = fileNames[indexPath.row]
-        cell?.detailTextLabel?.text = getTagListString(for: fileNames[indexPath.row])
+        cell?.textLabel?.text = filtedFileNames[indexPath.row]
+        cell?.detailTextLabel?.text = getTagListString(for: filtedFileNames[indexPath.row])
         
         return cell!
     }
+}
+
+// MARK: - UIPickerViewDelegate
+extension ViewController: UIPickerViewDelegate {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return allTagsForSelector[row]
+    }
     
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        tagSelector.text = allTagsForSelector[row]
+        tagSelector.resignFirstResponder()
+        fileTableView.reloadData()
+    }
+}
+
+// MARK: - UIPickerViewDataSource
+extension ViewController: UIPickerViewDataSource {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
     
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        allTagsForSelector.count
+    }
+}
+
+// MARK: - UISearchBarDelegate
+extension ViewController: UISearchBarDelegate {
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        fileTableView.reloadData()
+    }
 }
 
 // MARK: - EditTagViewControllerDelegate
@@ -169,6 +261,8 @@ extension ViewController: EditTagViewControllerDelegate {
         }
         
         self.allTags = allTags
+        self.allTagsForSelector = allTags
+        self.allTagsForSelector.insert(allTagConstant, at: 0)
         self.allFileTags[fileName] = selectedTags
         self.fileTableView.reloadData()
     }

@@ -14,12 +14,12 @@ protocol PhotoCollectionViewControllerDelegate {
 }
 
 class PhotoCollectionViewController: UIViewController {
-    let cellIdentifier = "COLLECTION_CELL_IDENTIFIER"
+    private let cellIdentifier = "COLLECTION_CELL_IDENTIFIER"
     var delegate: PhotoCollectionViewControllerDelegate?
     
     @IBOutlet weak var collection: UICollectionView!
     
-    var allPhotos = PHFetchResult<PHAsset>()
+    private var allPhotos = PHFetchResult<PHAsset>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
