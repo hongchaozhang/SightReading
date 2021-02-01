@@ -19,6 +19,9 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var tempoInput: UITextField!
     private var meterPickerView: UIPickerView!
     @IBOutlet weak var meterInput: UITextField!
+    private var maskOffsetPickerView: UIPickerView!
+    private var maskOffsetValues = [String]() // mask offset value should be less than the meterInput value.
+    @IBOutlet weak var maskOffsetInput: UITextField!
     @IBOutlet weak var imageViewOuterContainer: UIView!
     @IBOutlet weak var imageViewInnerContainer: UIView!
     @IBOutlet weak var imageView: UIImageView!
@@ -26,7 +29,7 @@ class PlayViewController: UIViewController {
     private var isPlaying = false
     
     private var sheetBasicInfo = [String: String]()
-    private var barFrames = [Int: CGRect]()
+    private var barFrames = [Int: CGRect]() // 1-based
     private var isFirstPage = true
     private var barCountBeforeBegin: Int {
         get {
@@ -106,10 +109,16 @@ class PlayViewController: UIViewController {
             tempoSelector.text = tempoSymbol
             tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: false)
         }
-        if let meter = sheetBasicInfo[meterKey],
-           let _ = Int(meter) {
-            meterInput.text = meter
-            meterPickerView.selectRow(meterValues.firstIndex(of: meter)!, inComponent: 0, animated: false)
+        if let meterString = sheetBasicInfo[meterKey],
+           let meter = Int(meterString) {
+            meterInput.text = meterString
+            meterPickerView.selectRow(meterValues.firstIndex(of: meterString)!, inComponent: 0, animated: false)
+            resetMaskOffsetValues(from: meter)
+        }
+        if let maskOffset = sheetBasicInfo[maskOffsetKey],
+           let _ = Int(maskOffset) {
+            maskOffsetInput.text = maskOffset
+            maskOffsetPickerView.selectRow(maskOffsetValues.firstIndex(of: maskOffset)!, inComponent: 0, animated: false)
         }
         isFirstPage = true
     }
@@ -123,9 +132,14 @@ class PlayViewController: UIViewController {
               let _ = Int(meterString) else {
             return
         }
+        guard let maskOffsetString = maskOffsetInput.text,
+              let _ = Int(maskOffsetString) else {
+            return
+        }
         
         sheetBasicInfo[tempoKey] = tempoString
         sheetBasicInfo[meterKey] = meterString
+        sheetBasicInfo[maskOffsetKey] = maskOffsetString
         
         if let rootPath = Utility.getRootPath(),
            let jsonFileName = navigationItem.title {
@@ -141,6 +155,7 @@ class PlayViewController: UIViewController {
     private func setupControls() {
         setupMetricInput()
         setupTempoControls()
+        setupMaskOffsetInput()
     }
     
     private func setupTempoControls() {
@@ -153,7 +168,7 @@ class PlayViewController: UIViewController {
             // setup default values
             tempoSelector.text = tempoDisplaySymbols[11] // Moderato
             tempoInput.text = "90"
-            tempoPickerView.selectRow(11, inComponent: 0, animated: true)
+            tempoPickerView.selectRow(11, inComponent: 0, animated: false)
         }
         
         func setupTempoInput() {
@@ -172,8 +187,28 @@ class PlayViewController: UIViewController {
         
         // setup default values
         meterInput.text = "4"
-        meterPickerView.selectRow(2, inComponent: 0, animated: true)
+        meterPickerView.selectRow(2, inComponent: 0, animated: false)
+        resetMaskOffsetValues(from: 4)
         
+    }
+    
+    private func resetMaskOffsetValues(from max: Int) {
+        if max > 0 {
+            maskOffsetValues = [String]()
+            for offsetValue in 0..<max {
+                maskOffsetValues.append(String(offsetValue))
+            }
+        }
+    }
+    
+    private func setupMaskOffsetInput() {
+        maskOffsetPickerView = UIPickerView()
+        maskOffsetPickerView.delegate = self
+        maskOffsetPickerView.dataSource = self
+        maskOffsetInput.inputView = maskOffsetPickerView
+        
+        maskOffsetInput.text = "0"
+        maskOffsetPickerView.selectRow(0, inComponent: 0, animated: false)
     }
     
     // MARK: - load resources
@@ -306,7 +341,9 @@ class PlayViewController: UIViewController {
         if let tempoString = tempoInput.text,
            let tempo = Double(tempoString),
            let meterString = meterInput.text,
-           let meterPerBar = Int(meterString) {
+           let meterPerBar = Int(meterString),
+           let maskOffsetString = maskOffsetInput.text,
+           let maskOffset = Int(maskOffsetString) {
             mask.frame = CGRect.zero
             var meterIndex = 0
             let totalBarCount = barFrames.count
@@ -335,7 +372,7 @@ class PlayViewController: UIViewController {
                             let realMeterIndex = meterIndex - self.barCountBeforeBegin * meterPerBar
                             let realBarIndex = realMeterIndex / meterPerBar + 1
                             let meterIndexInBar = meterIndex % meterPerBar + 1
-                            if meterIndexInBar == 1 { // first meter in a bar
+                            if meterIndexInBar == 1 + maskOffset { // first meter in a bar (maskOffset = 0)
                                 if let barFrame = self.barFrames[realBarIndex] {
                                     if realBarIndex == totalBarCount && self.hasNextPage() {
                                         // load the next page at the beginning of the last bar of the previous page so the the user has time to read the first bar of the new page
@@ -380,10 +417,13 @@ extension PlayViewController: UIPickerViewDelegate {
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if pickerView == tempoPickerView {
             return tempoFullSymbols[row]
-        } else {
+        } else if pickerView == meterPickerView {
             return meterValues[row]
+        } else if pickerView == maskOffsetPickerView {
+            return maskOffsetValues[row]
         }
         
+        return nil
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -395,9 +435,20 @@ extension PlayViewController: UIPickerViewDelegate {
             }
             tempoSelector.text = tempoDisplaySymbols[row]
             tempoSelector.resignFirstResponder()
-        } else {
+        } else if pickerView == meterPickerView {
             meterInput.text = meterValues[row]
+            if let meter = Int(meterValues[row]),
+               let maskOffsetString = maskOffsetInput.text,
+               let maskOffset = Int(maskOffsetString) {
+                resetMaskOffsetValues(from: meter)
+                if maskOffset >= meter {
+                    maskOffsetInput.text = String(meter - 1)
+                }
+            }
             meterInput.resignFirstResponder()
+        } else if pickerView == maskOffsetPickerView {
+            maskOffsetInput.text = maskOffsetValues[row]
+            maskOffsetInput.resignFirstResponder()
         }
     }
 }
@@ -411,8 +462,10 @@ extension PlayViewController: UIPickerViewDataSource {
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         if pickerView == tempoPickerView {
             return tempoFullSymbols.count
-        } else {
+        } else if pickerView == meterPickerView {
             return meterValues.count
+        } else {
+            return maskOffsetValues.count
         }
         
     }
