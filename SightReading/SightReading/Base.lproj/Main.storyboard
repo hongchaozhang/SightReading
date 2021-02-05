@@ -3,6 +3,7 @@
     <device id="ipad10_2" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -163,7 +164,7 @@
                                 </connections>
                             </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="r2d-JE-MxS">
-                                <rect key="frame" x="20" y="62" width="770" height="998"/>
+                                <rect key="frame" x="20" y="62" width="770" height="948"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ULE-eU-RNT">
                                         <rect key="frame" x="265" y="435" width="240" height="128"/>
@@ -171,6 +172,9 @@
                                         <subviews>
                                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R9J-1o-QNs">
                                                 <rect key="frame" x="-80" y="-130" width="399" height="388"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            </imageView>
+                                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Dx2-7X-fTb">
                                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                             </imageView>
                                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Be8-we-Pie" customClass="Mask" customModule="SightReading">
@@ -205,14 +209,17 @@
                             <constraint firstItem="RxG-CO-4Ly" firstAttribute="trailing" secondItem="dQJ-Oc-bcC" secondAttribute="trailing" constant="20" id="yaC-Ov-yBg"/>
                         </constraints>
                     </view>
+                    <toolbarItems/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="controlsContainerStack" destination="eay-bD-Dtc" id="i2J-Vo-iw5"/>
-                        <outlet property="imageView" destination="R9J-1o-QNs" id="ryX-Vw-y5X"/>
                         <outlet property="imageViewInnerContainer" destination="ULE-eU-RNT" id="dUE-1y-RdG"/>
                         <outlet property="imageViewOuterContainer" destination="r2d-JE-MxS" id="ZiW-lJ-wn5"/>
                         <outlet property="mask" destination="Be8-we-Pie" id="Yql-qN-ucm"/>
                         <outlet property="maskOffsetInput" destination="4br-q6-XZx" id="DPN-V7-RAk"/>
                         <outlet property="meterInput" destination="kTL-GG-icT" id="Kl9-fo-C48"/>
+                        <outlet property="noteImageView" destination="Dx2-7X-fTb" id="uWm-F2-ozr"/>
+                        <outlet property="sheetImageView" destination="R9J-1o-QNs" id="ryX-Vw-y5X"/>
                         <outlet property="startButton" destination="dQJ-Oc-bcC" id="6iF-Ly-Sbb"/>
                         <outlet property="stopButton" destination="tae-L4-Kxm" id="T27-cl-FLY"/>
                         <outlet property="tempoInput" destination="66G-gt-bFJ" id="NJP-Gr-00W"/>
@@ -237,6 +244,188 @@
                 </swipeGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="1652.5925925925924" y="471.66666666666663"/>
+        </scene>
+        <!--Take Note View Controller-->
+        <scene sceneID="Rqo-2L-e93">
+            <objects>
+                <viewController storyboardIdentifier="note" id="2XC-62-FPM" customClass="TakeNoteViewController" customModule="SightReading" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Jr2-kS-l4G">
+                        <rect key="frame" x="0.0" y="0.0" width="810" height="1080"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="2Fo-c0-deC" userLabel="image view outer container">
+                                <rect key="frame" x="20" y="20" width="770" height="987"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="e9C-fM-KRi" userLabel="image view inner container">
+                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="aYy-mg-eIX" customClass="ATSketchView" customModule="SightReading">
+                                                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <subviews>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="R9L-Va-RGy">
+                                                        <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </imageView>
+                                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Rhr-hu-wPk">
+                                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    </imageView>
+                                                </subviews>
+                                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                            </view>
+                                        </subviews>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </view>
+                                </subviews>
+                                <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                            </view>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ODZ-O9-SAP">
+                                <rect key="frame" x="187.5" y="1015" width="435" height="45"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yBw-U6-COz">
+                                        <rect key="frame" x="0.0" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="UCf-HE-lm0"/>
+                                            <constraint firstAttribute="width" constant="45" id="Zfp-bw-nX4"/>
+                                        </constraints>
+                                        <state key="normal">
+                                            <imageReference key="image" image="arrowshape.turn.up.left" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="undoButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="96S-br-5Y3"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Sb3-50-IAX">
+                                        <rect key="frame" x="65" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="sQ0-2v-46z"/>
+                                            <constraint firstAttribute="width" constant="45" id="tqB-vX-Cek"/>
+                                        </constraints>
+                                        <state key="normal">
+                                            <imageReference key="image" image="arrowshape.turn.up.right" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="redoButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="wsd-Ac-2vf"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="93f-Jy-cUh" userLabel="brush color button" customClass="BrushColorButton" customModule="SightReading" customModuleProvider="target">
+                                        <rect key="frame" x="130" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="Jey-xr-fOj"/>
+                                            <constraint firstAttribute="width" constant="45" id="fUz-6v-vp5"/>
+                                        </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="selectedWidth">
+                                                <real key="value" value="1"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                        <connections>
+                                            <action selector="brushColorButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="aFb-5U-jfU"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zqG-nA-ofe" userLabel="brush width button" customClass="BrushWidthButton" customModule="SightReading">
+                                        <rect key="frame" x="195" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="An3-qf-DcF"/>
+                                            <constraint firstAttribute="width" constant="45" id="NOG-4d-ZT3"/>
+                                        </constraints>
+                                        <connections>
+                                            <action selector="brushWidthButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="8X3-3D-CAJ"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3GU-ef-C3A" userLabel="pencil button">
+                                        <rect key="frame" x="260" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="Gpp-96-a53"/>
+                                            <constraint firstAttribute="width" constant="45" id="gLm-7M-kKB"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                        <state key="normal">
+                                            <imageReference key="image" image="scribble.variable" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <state key="selected">
+                                            <imageReference key="image" image="scribble.variable" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <imageReference key="image" image="scribble.variable" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="pencilButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="gHa-W8-hHI"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="b45-9a-CXk" userLabel="eraser button">
+                                        <rect key="frame" x="325" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="45" id="Vpz-zk-IyO"/>
+                                            <constraint firstAttribute="height" constant="45" id="ozP-rN-gpW"/>
+                                        </constraints>
+                                        <state key="normal">
+                                            <imageReference key="image" image="bandage" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <state key="highlighted">
+                                            <imageReference key="image" image="bandage" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="eraserButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="HIF-CE-NA3"/>
+                                        </connections>
+                                    </button>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="PIX-QX-Flq">
+                                        <rect key="frame" x="390" y="0.0" width="45" height="45"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="45" id="ZaB-Wf-4Z0"/>
+                                            <constraint firstAttribute="width" constant="45" id="l2U-TD-gSD"/>
+                                        </constraints>
+                                        <state key="normal">
+                                            <imageReference key="image" image="trash" catalog="system" symbolScale="large"/>
+                                        </state>
+                                        <connections>
+                                            <action selector="clearButtonTapped" destination="2XC-62-FPM" eventType="touchUpInside" id="d2T-1P-QVS"/>
+                                        </connections>
+                                    </button>
+                                </subviews>
+                            </stackView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="15" minValue="1" maxValue="30" translatesAutoresizingMaskIntoConstraints="NO" id="Xn7-6O-k6C">
+                                <rect key="frame" x="18" y="977" width="774" height="31"/>
+                                <connections>
+                                    <action selector="brushWidthSliderChanged:" destination="2XC-62-FPM" eventType="valueChanged" id="ofv-M2-QMM"/>
+                                    <action selector="didEndEditBrushWidthSlider" destination="2XC-62-FPM" eventType="touchUpInside" id="Wg2-he-iE0"/>
+                                </connections>
+                            </slider>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="Uy8-1U-7w1"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="Uy8-1U-7w1" firstAttribute="bottom" secondItem="ODZ-O9-SAP" secondAttribute="bottom" constant="20" id="BNu-Iq-ama"/>
+                            <constraint firstItem="Uy8-1U-7w1" firstAttribute="trailing" secondItem="Xn7-6O-k6C" secondAttribute="trailing" constant="20" id="Bfc-2u-hYB"/>
+                            <constraint firstItem="Xn7-6O-k6C" firstAttribute="leading" secondItem="Uy8-1U-7w1" secondAttribute="leading" constant="20" id="SRg-wO-ECC"/>
+                            <constraint firstItem="2Fo-c0-deC" firstAttribute="leading" secondItem="Uy8-1U-7w1" secondAttribute="leading" constant="20" id="T8M-As-Rkr"/>
+                            <constraint firstItem="Uy8-1U-7w1" firstAttribute="trailing" secondItem="2Fo-c0-deC" secondAttribute="trailing" constant="20" id="XgF-lW-AAR"/>
+                            <constraint firstItem="2Fo-c0-deC" firstAttribute="top" secondItem="Uy8-1U-7w1" secondAttribute="top" constant="20" id="aUb-V2-PbX"/>
+                            <constraint firstItem="ODZ-O9-SAP" firstAttribute="top" secondItem="2Fo-c0-deC" secondAttribute="bottom" constant="8" symbolic="YES" id="kZa-m8-vl5"/>
+                            <constraint firstItem="ODZ-O9-SAP" firstAttribute="centerX" secondItem="Uy8-1U-7w1" secondAttribute="centerX" id="mgp-5L-2rg"/>
+                            <constraint firstItem="ODZ-O9-SAP" firstAttribute="top" secondItem="Xn7-6O-k6C" secondAttribute="bottom" constant="8" symbolic="YES" id="tnd-PV-xfP"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="brushColorButton" destination="93f-Jy-cUh" id="UNq-AZ-guK"/>
+                        <outlet property="brushWidthButton" destination="zqG-nA-ofe" id="0rj-CZ-LKs"/>
+                        <outlet property="brushWidthSlider" destination="Xn7-6O-k6C" id="Q4I-ah-eBA"/>
+                        <outlet property="clearButton" destination="PIX-QX-Flq" id="Hnd-cw-Pil"/>
+                        <outlet property="eraserButton" destination="b45-9a-CXk" id="ebz-q0-gbc"/>
+                        <outlet property="imageInnerContainer" destination="e9C-fM-KRi" id="ZZn-z5-1RQ"/>
+                        <outlet property="imageOuterContainer" destination="2Fo-c0-deC" id="Z3N-4w-9vH"/>
+                        <outlet property="noteImageView" destination="Rhr-hu-wPk" id="Tqa-5g-BLb"/>
+                        <outlet property="pencilButton" destination="3GU-ef-C3A" id="JFr-ZE-PGO"/>
+                        <outlet property="redoButton" destination="Sb3-50-IAX" id="edh-OX-2Iy"/>
+                        <outlet property="sheetImageView" destination="R9L-Va-RGy" id="3rU-sS-WWj"/>
+                        <outlet property="sketchView" destination="aYy-mg-eIX" id="g7S-vB-XXu"/>
+                        <outlet property="undoButton" destination="yBw-U6-COz" id="Sea-Uh-jzK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="XBh-vu-q3H" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2534.8148148148148" y="520.55555555555554"/>
         </scene>
         <!--Edit Tag View Controller-->
         <scene sceneID="buX-5g-JRz">
@@ -313,7 +502,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Eeq-u8-JT9" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2545.9259259259256" y="510.55555555555554"/>
+            <point key="canvasLocation" x="1653" y="1198"/>
         </scene>
         <!--Add New View Controller-->
         <scene sceneID="5aA-rc-3So">
@@ -486,6 +675,11 @@
         </scene>
     </scenes>
     <resources>
+        <image name="arrowshape.turn.up.left" catalog="system" width="128" height="106"/>
+        <image name="arrowshape.turn.up.right" catalog="system" width="128" height="106"/>
+        <image name="bandage" catalog="system" width="128" height="122"/>
+        <image name="scribble.variable" catalog="system" width="128" height="118"/>
+        <image name="trash" catalog="system" width="121" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

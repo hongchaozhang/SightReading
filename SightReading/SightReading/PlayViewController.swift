@@ -24,7 +24,8 @@ class PlayViewController: UIViewController {
     @IBOutlet weak var maskOffsetInput: UITextField!
     @IBOutlet weak var imageViewOuterContainer: UIView!
     @IBOutlet weak var imageViewInnerContainer: UIView!
-    @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var sheetImageView: UIImageView!
+    @IBOutlet weak var noteImageView: UIImageView!
     @IBOutlet weak var mask: Mask!
     private var isPlaying = false
     
@@ -46,6 +47,7 @@ class PlayViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupControls()
+        setupNavigationbar()
         createSoundIDs()
         loadJsonFile()
         loadCurrentSheetImage()
@@ -69,6 +71,21 @@ class PlayViewController: UIViewController {
         mask.frame = .zero
     }
     
+    // MARK: - take note
+    private func setupNavigationbar() {
+        let editBarItem = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonTapped))
+        navigationItem.rightBarButtonItem = editBarItem
+    }
+    
+    @objc func editButtonTapped() {
+        if let takeNoteVC = storyboard?.instantiateViewController(identifier: "note") as? TakeNoteViewController {
+            takeNoteVC.sheetImage = sheetImageView.image
+            takeNoteVC.noteImage = noteImageView.image
+            takeNoteVC.delegate = self
+            navigationController?.pushViewController(takeNoteVC, animated: true)
+        }
+    }
+    
     // MARK: - private functions
     private func getTempoSymbol(from tempoString: String?) -> String? {
         var tempoSymbol: String?
@@ -88,13 +105,16 @@ class PlayViewController: UIViewController {
     }
     
     private func layoutImageView() {
-        guard let imageSize = imageView.image?.size else {
+        guard let imageSize = sheetImageView.image?.size else {
             return
         }
 
         let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
         imageViewInnerContainer.frame = innerContainerFrame
-        imageView.frame = CGRect(origin: .zero, size: innerContainerFrame.size)
+        sheetImageView.frame = imageViewInnerContainer.bounds
+        if let _ = noteImageView.image {
+            noteImageView.frame = imageViewInnerContainer.bounds
+        }
         imageViewInnerContainer.alpha = 0
         UIView.animate(withDuration: 0.2) { // 0.2: can not be set too big, or when the page is automatically changed, there may be some delay to show the new page, and there is no time for the user to read the new music notes
             self.imageViewInnerContainer.alpha = 1.0
@@ -238,8 +258,11 @@ class PlayViewController: UIViewController {
     
     private func loadSheetImage(with imageName: String) {
         if let rootPath = Utility.getRootPath(),
-           let image2 = UIImage(contentsOfFile: "\(rootPath)/\(imageName).png") {
-            imageView.image = image2
+           let sheetImage = UIImage(contentsOfFile: "\(rootPath)/\(imageName).png") {
+            sheetImageView.image = sheetImage
+            if let noteImage = UIImage(contentsOfFile: "\(rootPath)/\(imageName)\(noteImageSubfix).png") {
+                noteImageView.image = noteImage
+            }
             layoutImageView()
         }
     }
@@ -379,7 +402,7 @@ class PlayViewController: UIViewController {
                                         self.mask.frame = .zero
                                         self.loadNextSheetImage()
                                     } else {
-                                        self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.imageView.frame.size)
+                                        self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.sheetImageView.frame.size)
                                     }
                                     
                                 }
@@ -488,6 +511,22 @@ extension PlayViewController: UITextFieldDelegate {
         if let tempoSymbol = getTempoSymbol(from: textField.text) {
             tempoSelector.text = tempoSymbol
             tempoPickerView.selectRow(tempoDisplaySymbols.firstIndex(of: tempoSymbol)!, inComponent: 0, animated: true)
+        }
+    }
+}
+
+// MARK: - TakeNoteViewControllerDelegate
+extension PlayViewController: TakeNoteViewControllerDelegate {
+    func saveNote(with image: UIImage?) {
+        if let image = image {
+            noteImageView.frame = imageViewInnerContainer.bounds
+            noteImageView.image = image
+            if let rootPath = Utility.getRootPath(),
+               let fileName = navigationItem.title,
+               let imageData = image.pngData() {
+                let fullFilePath = "\(rootPath)/\(fileName)\(noteImageSubfix).png"
+                FileManager.default.createFile(atPath: fullFilePath, contents: imageData, attributes: nil)
+            }
         }
     }
 }

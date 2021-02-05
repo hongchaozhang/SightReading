@@ -23,6 +23,31 @@
 		BA65F81125BACDAE009A7FE5 /* PhotoCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */; };
 		BA65F81225BACDAE009A7FE5 /* AddNewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */; };
 		BA65F84D25C3AD7E009A7FE5 /* EditTagViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */; };
+		BAB0BF8E25CBE5B40093E527 /* ATSmartBezierPath+RecognizerTemplates.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7325CBE5B30093E527 /* ATSmartBezierPath+RecognizerTemplates.swift */; };
+		BAB0BF8F25CBE5B40093E527 /* ATSmartBezierPath+UnistrokeRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7425CBE5B30093E527 /* ATSmartBezierPath+UnistrokeRecognizer.swift */; };
+		BAB0BF9025CBE5B40093E527 /* ATSmartBezierPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7525CBE5B30093E527 /* ATSmartBezierPath.swift */; };
+		BAB0BF9125CBE5B40093E527 /* ATUnistrokeTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7625CBE5B30093E527 /* ATUnistrokeTemplate.swift */; };
+		BAB0BF9225CBE5B40093E527 /* ATSmartBezierPath+Smoothing.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7725CBE5B30093E527 /* ATSmartBezierPath+Smoothing.swift */; };
+		BAB0BF9325CBE5B40093E527 /* ATRecognizedPathResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7825CBE5B30093E527 /* ATRecognizedPathResult.swift */; };
+		BAB0BF9425CBE5B40093E527 /* ATColorPicker+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7A25CBE5B30093E527 /* ATColorPicker+Delegate.swift */; };
+		BAB0BF9525CBE5B40093E527 /* ATColorPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7B25CBE5B30093E527 /* ATColorPicker.swift */; };
+		BAB0BF9625CBE5B40093E527 /* ATColorSwatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF7C25CBE5B30093E527 /* ATColorSwatch.swift */; };
+		BAB0BF9725CBE5B40093E527 /* rectangle2.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB0BF7E25CBE5B30093E527 /* rectangle2.json */; };
+		BAB0BF9825CBE5B40093E527 /* circle.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB0BF7F25CBE5B30093E527 /* circle.json */; };
+		BAB0BF9925CBE5B40093E527 /* format.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB0BF8025CBE5B30093E527 /* format.json */; };
+		BAB0BF9A25CBE5B40093E527 /* rectangle1.json in Resources */ = {isa = PBXBuildFile; fileRef = BAB0BF8125CBE5B30093E527 /* rectangle1.json */; };
+		BAB0BF9B25CBE5B40093E527 /* ATSketchView+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8325CBE5B30093E527 /* ATSketchView+Events.swift */; };
+		BAB0BF9C25CBE5B40093E527 /* ATSketchViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8425CBE5B30093E527 /* ATSketchViewDelegate.swift */; };
+		BAB0BF9D25CBE5B40093E527 /* ATSketchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8525CBE5B30093E527 /* ATSketchView.swift */; };
+		BAB0BF9E25CBE5B40093E527 /* ATShapeLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8625CBE5B30093E527 /* ATShapeLayer.swift */; };
+		BAB0BF9F25CBE5B40093E527 /* ATSketchView+UndoRedo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8725CBE5B30093E527 /* ATSketchView+UndoRedo.swift */; };
+		BAB0BFA025CBE5B40093E527 /* ATSketchView+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8825CBE5B30093E527 /* ATSketchView+Drop.swift */; };
+		BAB0BFA125CBE5B40093E527 /* ATSketchView+Pencil.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8925CBE5B40093E527 /* ATSketchView+Pencil.swift */; };
+		BAB0BFA225CBE5B40093E527 /* ATSketchView+LayerManagement.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8A25CBE5B40093E527 /* ATSketchView+LayerManagement.swift */; };
+		BAB0BFA325CBE5B40093E527 /* ATSketchTopLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BF8B25CBE5B40093E527 /* ATSketchTopLayer.swift */; };
+		BAB0BFA825CBEF180093E527 /* TakeNoteViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BFA725CBEF180093E527 /* TakeNoteViewController.swift */; };
+		BAB0BFBA25CBF3190093E527 /* BrushColorButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BFB925CBF3190093E527 /* BrushColorButton.swift */; };
+		BAB0BFBD25CBF3340093E527 /* BrushWidthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BAB0BFBC25CBF3340093E527 /* BrushWidthButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +69,32 @@
 		BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoCollectionViewController.swift; sourceTree = "<group>"; };
 		BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddNewViewController.swift; sourceTree = "<group>"; };
 		BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTagViewController.swift; sourceTree = "<group>"; };
+		BAB0BF7325CBE5B30093E527 /* ATSmartBezierPath+RecognizerTemplates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSmartBezierPath+RecognizerTemplates.swift"; sourceTree = "<group>"; };
+		BAB0BF7425CBE5B30093E527 /* ATSmartBezierPath+UnistrokeRecognizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSmartBezierPath+UnistrokeRecognizer.swift"; sourceTree = "<group>"; };
+		BAB0BF7525CBE5B30093E527 /* ATSmartBezierPath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATSmartBezierPath.swift; sourceTree = "<group>"; };
+		BAB0BF7625CBE5B30093E527 /* ATUnistrokeTemplate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATUnistrokeTemplate.swift; sourceTree = "<group>"; };
+		BAB0BF7725CBE5B30093E527 /* ATSmartBezierPath+Smoothing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSmartBezierPath+Smoothing.swift"; sourceTree = "<group>"; };
+		BAB0BF7825CBE5B30093E527 /* ATRecognizedPathResult.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATRecognizedPathResult.swift; sourceTree = "<group>"; };
+		BAB0BF7A25CBE5B30093E527 /* ATColorPicker+Delegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATColorPicker+Delegate.swift"; sourceTree = "<group>"; };
+		BAB0BF7B25CBE5B30093E527 /* ATColorPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATColorPicker.swift; sourceTree = "<group>"; };
+		BAB0BF7C25CBE5B30093E527 /* ATColorSwatch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATColorSwatch.swift; sourceTree = "<group>"; };
+		BAB0BF7E25CBE5B30093E527 /* rectangle2.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = rectangle2.json; sourceTree = "<group>"; };
+		BAB0BF7F25CBE5B30093E527 /* circle.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = circle.json; sourceTree = "<group>"; };
+		BAB0BF8025CBE5B30093E527 /* format.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = format.json; sourceTree = "<group>"; };
+		BAB0BF8125CBE5B30093E527 /* rectangle1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = rectangle1.json; sourceTree = "<group>"; };
+		BAB0BF8325CBE5B30093E527 /* ATSketchView+Events.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSketchView+Events.swift"; sourceTree = "<group>"; };
+		BAB0BF8425CBE5B30093E527 /* ATSketchViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATSketchViewDelegate.swift; sourceTree = "<group>"; };
+		BAB0BF8525CBE5B30093E527 /* ATSketchView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATSketchView.swift; sourceTree = "<group>"; };
+		BAB0BF8625CBE5B30093E527 /* ATShapeLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATShapeLayer.swift; sourceTree = "<group>"; };
+		BAB0BF8725CBE5B30093E527 /* ATSketchView+UndoRedo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSketchView+UndoRedo.swift"; sourceTree = "<group>"; };
+		BAB0BF8825CBE5B30093E527 /* ATSketchView+Drop.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSketchView+Drop.swift"; sourceTree = "<group>"; };
+		BAB0BF8925CBE5B40093E527 /* ATSketchView+Pencil.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSketchView+Pencil.swift"; sourceTree = "<group>"; };
+		BAB0BF8A25CBE5B40093E527 /* ATSketchView+LayerManagement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ATSketchView+LayerManagement.swift"; sourceTree = "<group>"; };
+		BAB0BF8B25CBE5B40093E527 /* ATSketchTopLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATSketchTopLayer.swift; sourceTree = "<group>"; };
+		BAB0BF8C25CBE5B40093E527 /* ATSketchKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ATSketchKit.h; sourceTree = "<group>"; };
+		BAB0BFA725CBEF180093E527 /* TakeNoteViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TakeNoteViewController.swift; sourceTree = "<group>"; };
+		BAB0BFB925CBF3190093E527 /* BrushColorButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushColorButton.swift; sourceTree = "<group>"; };
+		BAB0BFBC25CBF3340093E527 /* BrushWidthButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrushWidthButton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,12 +127,16 @@
 		BA65F7EB25BACCED009A7FE5 /* SightReading */ = {
 			isa = PBXGroup;
 			children = (
+				BAB0BF7125CBE5B30093E527 /* ATSketchKit */,
 				BA65F7F025BACCED009A7FE5 /* ViewController.swift */,
 				BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */,
 				BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */,
 				BA65F80625BACDAD009A7FE5 /* PhotoCollectionViewLayout.swift */,
 				BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */,
 				BA65F80125BACDAD009A7FE5 /* PlayViewController.swift */,
+				BAB0BFA725CBEF180093E527 /* TakeNoteViewController.swift */,
+				BAB0BFB925CBF3190093E527 /* BrushColorButton.swift */,
+				BAB0BFBC25CBF3340093E527 /* BrushWidthButton.swift */,
 				BA65F84C25C3AD7D009A7FE5 /* EditTagViewController.swift */,
 				BA65F80325BACDAD009A7FE5 /* constants.swift */,
 				BA65F80525BACDAD009A7FE5 /* Utility.swift */,
@@ -95,6 +150,68 @@
 				BA65F7FA25BACCEE009A7FE5 /* Info.plist */,
 			);
 			path = SightReading;
+			sourceTree = "<group>";
+		};
+		BAB0BF7125CBE5B30093E527 /* ATSketchKit */ = {
+			isa = PBXGroup;
+			children = (
+				BAB0BF7225CBE5B30093E527 /* ATSmartBezierPath */,
+				BAB0BF7925CBE5B30093E527 /* ATColorPicker */,
+				BAB0BF7D25CBE5B30093E527 /* Templates */,
+				BAB0BF8225CBE5B30093E527 /* ATSketchView */,
+				BAB0BF8C25CBE5B40093E527 /* ATSketchKit.h */,
+			);
+			path = ATSketchKit;
+			sourceTree = "<group>";
+		};
+		BAB0BF7225CBE5B30093E527 /* ATSmartBezierPath */ = {
+			isa = PBXGroup;
+			children = (
+				BAB0BF7325CBE5B30093E527 /* ATSmartBezierPath+RecognizerTemplates.swift */,
+				BAB0BF7425CBE5B30093E527 /* ATSmartBezierPath+UnistrokeRecognizer.swift */,
+				BAB0BF7525CBE5B30093E527 /* ATSmartBezierPath.swift */,
+				BAB0BF7625CBE5B30093E527 /* ATUnistrokeTemplate.swift */,
+				BAB0BF7725CBE5B30093E527 /* ATSmartBezierPath+Smoothing.swift */,
+				BAB0BF7825CBE5B30093E527 /* ATRecognizedPathResult.swift */,
+			);
+			path = ATSmartBezierPath;
+			sourceTree = "<group>";
+		};
+		BAB0BF7925CBE5B30093E527 /* ATColorPicker */ = {
+			isa = PBXGroup;
+			children = (
+				BAB0BF7A25CBE5B30093E527 /* ATColorPicker+Delegate.swift */,
+				BAB0BF7B25CBE5B30093E527 /* ATColorPicker.swift */,
+				BAB0BF7C25CBE5B30093E527 /* ATColorSwatch.swift */,
+			);
+			path = ATColorPicker;
+			sourceTree = "<group>";
+		};
+		BAB0BF7D25CBE5B30093E527 /* Templates */ = {
+			isa = PBXGroup;
+			children = (
+				BAB0BF7E25CBE5B30093E527 /* rectangle2.json */,
+				BAB0BF7F25CBE5B30093E527 /* circle.json */,
+				BAB0BF8025CBE5B30093E527 /* format.json */,
+				BAB0BF8125CBE5B30093E527 /* rectangle1.json */,
+			);
+			path = Templates;
+			sourceTree = "<group>";
+		};
+		BAB0BF8225CBE5B30093E527 /* ATSketchView */ = {
+			isa = PBXGroup;
+			children = (
+				BAB0BF8325CBE5B30093E527 /* ATSketchView+Events.swift */,
+				BAB0BF8425CBE5B30093E527 /* ATSketchViewDelegate.swift */,
+				BAB0BF8525CBE5B30093E527 /* ATSketchView.swift */,
+				BAB0BF8625CBE5B30093E527 /* ATShapeLayer.swift */,
+				BAB0BF8725CBE5B30093E527 /* ATSketchView+UndoRedo.swift */,
+				BAB0BF8825CBE5B30093E527 /* ATSketchView+Drop.swift */,
+				BAB0BF8925CBE5B40093E527 /* ATSketchView+Pencil.swift */,
+				BAB0BF8A25CBE5B40093E527 /* ATSketchView+LayerManagement.swift */,
+				BAB0BF8B25CBE5B40093E527 /* ATSketchTopLayer.swift */,
+			);
+			path = ATSketchView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -156,6 +273,10 @@
 			files = (
 				BA65F7F925BACCEE009A7FE5 /* LaunchScreen.storyboard in Resources */,
 				BA65F7F625BACCEE009A7FE5 /* Assets.xcassets in Resources */,
+				BAB0BF9725CBE5B40093E527 /* rectangle2.json in Resources */,
+				BAB0BF9925CBE5B40093E527 /* format.json in Resources */,
+				BAB0BF9825CBE5B40093E527 /* circle.json in Resources */,
+				BAB0BF9A25CBE5B40093E527 /* rectangle1.json in Resources */,
 				BA65F7F425BACCED009A7FE5 /* Main.storyboard in Resources */,
 				BA65F80B25BACDAE009A7FE5 /* Resource.bundle in Resources */,
 			);
@@ -170,16 +291,37 @@
 			files = (
 				BA65F81225BACDAE009A7FE5 /* AddNewViewController.swift in Sources */,
 				BA65F80E25BACDAE009A7FE5 /* Utility.swift in Sources */,
+				BAB0BF9B25CBE5B40093E527 /* ATSketchView+Events.swift in Sources */,
+				BAB0BF9E25CBE5B40093E527 /* ATShapeLayer.swift in Sources */,
+				BAB0BFBD25CBF3340093E527 /* BrushWidthButton.swift in Sources */,
 				BA65F80F25BACDAE009A7FE5 /* PhotoCollectionViewLayout.swift in Sources */,
+				BAB0BF9625CBE5B40093E527 /* ATColorSwatch.swift in Sources */,
 				BA65F84D25C3AD7E009A7FE5 /* EditTagViewController.swift in Sources */,
+				BAB0BFBA25CBF3190093E527 /* BrushColorButton.swift in Sources */,
+				BAB0BFA025CBE5B40093E527 /* ATSketchView+Drop.swift in Sources */,
+				BAB0BFA125CBE5B40093E527 /* ATSketchView+Pencil.swift in Sources */,
+				BAB0BF9025CBE5B40093E527 /* ATSmartBezierPath.swift in Sources */,
 				BA65F80A25BACDAE009A7FE5 /* PlayViewController.swift in Sources */,
+				BAB0BF9F25CBE5B40093E527 /* ATSketchView+UndoRedo.swift in Sources */,
+				BAB0BFA325CBE5B40093E527 /* ATSketchTopLayer.swift in Sources */,
 				BA65F81025BACDAE009A7FE5 /* PhotoCollectionCell.swift in Sources */,
 				BA65F7F125BACCED009A7FE5 /* ViewController.swift in Sources */,
+				BAB0BF9C25CBE5B40093E527 /* ATSketchViewDelegate.swift in Sources */,
 				BA65F81125BACDAE009A7FE5 /* PhotoCollectionViewController.swift in Sources */,
+				BAB0BF9425CBE5B40093E527 /* ATColorPicker+Delegate.swift in Sources */,
+				BAB0BF9125CBE5B40093E527 /* ATUnistrokeTemplate.swift in Sources */,
+				BAB0BF9225CBE5B40093E527 /* ATSmartBezierPath+Smoothing.swift in Sources */,
 				BA65F7ED25BACCED009A7FE5 /* AppDelegate.swift in Sources */,
+				BAB0BF8E25CBE5B40093E527 /* ATSmartBezierPath+RecognizerTemplates.swift in Sources */,
+				BAB0BFA825CBEF180093E527 /* TakeNoteViewController.swift in Sources */,
 				BA65F80C25BACDAE009A7FE5 /* constants.swift in Sources */,
 				BA65F7EF25BACCED009A7FE5 /* SceneDelegate.swift in Sources */,
+				BAB0BF9525CBE5B40093E527 /* ATColorPicker.swift in Sources */,
 				BA65F80D25BACDAE009A7FE5 /* Mask.swift in Sources */,
+				BAB0BF9325CBE5B40093E527 /* ATRecognizedPathResult.swift in Sources */,
+				BAB0BF8F25CBE5B40093E527 /* ATSmartBezierPath+UnistrokeRecognizer.swift in Sources */,
+				BAB0BF9D25CBE5B40093E527 /* ATSketchView.swift in Sources */,
+				BAB0BFA225CBE5B40093E527 /* ATSketchView+LayerManagement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

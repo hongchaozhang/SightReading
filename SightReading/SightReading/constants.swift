@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+let noteImageSubfix = "&-note"
 let photoCollectionWH: CGFloat = 128
 let basicInfoKey = "basic info"
 let tempoKey = "tempo"

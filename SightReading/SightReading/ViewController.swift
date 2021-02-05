@@ -99,7 +99,8 @@ class ViewController: UIViewController {
                 if let filePath = filePath as? String {
                     let strings = filePath.split(separator: ".")
                     if let fileNameSubSeqence = strings.first  {
-                        let fileName = String(fileNameSubSeqence)
+                        let originFileName = String(fileNameSubSeqence)
+                        let fileName = originFileName.replacingOccurrences(of: noteImageSubfix, with: "", options: .backwards, range: nil)
                         if fileName != "DS_Store" && !allFileNames.contains(fileName) {
                             allFileNames.append(fileName)
                         }
