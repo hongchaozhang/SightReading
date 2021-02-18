@@ -119,6 +119,7 @@ import Foundation
     /// Value used to determine if the canvas has content, irrespective of its history.
     public var hasContent: Bool {
         get {
+            // The reason we change "1" to "3" is that we add two subviews to ATSketchView
             if self.layer.sublayers?.count ?? 0 > 3 {
                 return true
             } else {
@@ -130,6 +131,7 @@ import Foundation
     /// Tells if the sketchview is capable of doing an undo in the future
 	public var canUndo: Bool {
 		get {
+            // The reason we change "1" to "3" is that we add two subviews to ATSketchView
 			return allowUndoRedo && self.layer.sublayers?.count ?? 0 > 3 && self.history.count <= self.maxUndoRedoSteps
 		}
 	}
@@ -169,7 +171,6 @@ import Foundation
 	}
 	
 	fileprivate func configureView() {
-        print("[ATSketchView] Configuring view...")
 		// Insert customization & init here
 		self.topLayer = ATSketchTopLayer()
 		self.topLayer.fillColor = nil
@@ -196,7 +197,6 @@ import Foundation
     
 	/** Produces an image with the current visible content and returns it. */
     public func produceImage(with isFullSize: Bool = false) -> UIImage? {
-        print("[ATSketchView] Producing image...")
         let finalBounds = isFullSize ? bounds : sketchBounds
         
         UIGraphicsBeginImageContextWithOptions(self.bounds.size, false, 0)

@@ -10,8 +10,8 @@ import UIKit
 import AVFoundation
 
 class PlayViewController: UIViewController {
-    @IBOutlet weak var startButton: UIButton!
-    @IBOutlet weak var stopButton: UIButton!
+    @IBOutlet weak var startStopPlayingButton: UIButton!
+    @IBOutlet weak var showHideNoteButton: UIButton!
     
     @IBOutlet weak var controlsContainerStack: UIStackView!
     @IBOutlet weak var tempoSelector: UITextField!
@@ -61,7 +61,7 @@ class PlayViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        stop(UIButton())
+        stopPlaying()
         storeSettings()
     }
     
@@ -83,6 +83,16 @@ class PlayViewController: UIViewController {
             takeNoteVC.noteImage = noteImageView.image
             takeNoteVC.delegate = self
             navigationController?.pushViewController(takeNoteVC, animated: true)
+        }
+    }
+    
+    @IBAction func showHideNote() {
+        if noteImageView.isHidden {
+            noteImageView.isHidden = false
+            showHideNoteButton.setTitle("Hide Note", for: .normal)
+        } else {
+            noteImageView.isHidden = true
+            showHideNoteButton.setTitle("Show Note", for: .normal)
         }
     }
     
@@ -110,14 +120,16 @@ class PlayViewController: UIViewController {
         }
 
         let innerContainerFrame = Utility.fit(size: imageSize, into: imageViewOuterContainer.frame.size)
-        imageViewInnerContainer.frame = innerContainerFrame
-        sheetImageView.frame = imageViewInnerContainer.bounds
-        if let _ = noteImageView.image {
-            noteImageView.frame = imageViewInnerContainer.bounds
-        }
-        imageViewInnerContainer.alpha = 0
-        UIView.animate(withDuration: 0.2) { // 0.2: can not be set too big, or when the page is automatically changed, there may be some delay to show the new page, and there is no time for the user to read the new music notes
-            self.imageViewInnerContainer.alpha = 1.0
+        if imageViewInnerContainer.frame != innerContainerFrame {
+            imageViewInnerContainer.frame = innerContainerFrame
+            sheetImageView.frame = imageViewInnerContainer.bounds
+            if let _ = noteImageView.image {
+                noteImageView.frame = imageViewInnerContainer.bounds
+            }
+            imageViewInnerContainer.alpha = 0
+            UIView.animate(withDuration: 0.2) { // 0.2: can not be set too big, or when the page is automatically changed, there may be some delay to show the new page, and there is no time for the user to read the new music notes
+                self.imageViewInnerContainer.alpha = 1.0
+            }
         }
     }
     
@@ -134,6 +146,7 @@ class PlayViewController: UIViewController {
             meterInput.text = meterString
             meterPickerView.selectRow(meterValues.firstIndex(of: meterString)!, inComponent: 0, animated: false)
             resetMaskOffsetValues(from: meter)
+            maskOffsetPickerView.reloadAllComponents()
         }
         if let maskOffset = sheetBasicInfo[maskOffsetKey],
            let _ = Int(maskOffset) {
@@ -260,9 +273,7 @@ class PlayViewController: UIViewController {
         if let rootPath = Utility.getRootPath(),
            let sheetImage = UIImage(contentsOfFile: "\(rootPath)/\(imageName).png") {
             sheetImageView.image = sheetImage
-            if let noteImage = UIImage(contentsOfFile: "\(rootPath)/\(imageName)\(noteImageSubfix).png") {
-                noteImageView.image = noteImage
-            }
+            noteImageView.image = UIImage(contentsOfFile: "\(rootPath)/\(imageName)\(noteImageSubfix).png")
             layoutImageView()
         }
     }
@@ -343,18 +354,23 @@ class PlayViewController: UIViewController {
     }
     
     // MARK: - animations
-    @IBAction func start(_ sender: Any) {
-        startButton.isHidden = true
-        stopButton.isHidden = false
+    @IBAction func startStopPlaying(_ sender: Any) {
+        if !isPlaying {
+            startPlaying()
+        } else {
+            stopPlaying()
+        }
+    }
+    
+    private func startPlaying() {
+        startStopPlayingButton.setTitle("Stop", for: .normal)
         stopMaskFlag = false
         isPlaying = true
-        
         startAnimateMask()
     }
     
-    @IBAction func stop(_ sender: Any) {
-        stopButton.isHidden = true
-        startButton.isHidden = false
+    private func stopPlaying() {
+        startStopPlayingButton.setTitle("Start", for: .normal)
         stopMaskFlag = true
         isPlaying = false
         mask.frame = .zero
@@ -424,7 +440,7 @@ class PlayViewController: UIViewController {
                             animateMask()
                         }
                     } else {
-                        self.stop(UIButton())
+                        self.stopPlaying()
                     }
                 })
             }
@@ -464,6 +480,7 @@ extension PlayViewController: UIPickerViewDelegate {
                let maskOffsetString = maskOffsetInput.text,
                let maskOffset = Int(maskOffsetString) {
                 resetMaskOffsetValues(from: meter)
+                maskOffsetPickerView.reloadAllComponents()
                 if maskOffset >= meter {
                     maskOffsetInput.text = String(meter - 1)
                 }

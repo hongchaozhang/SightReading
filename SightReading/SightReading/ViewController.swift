@@ -162,10 +162,14 @@ extension ViewController: UITableViewDelegate {
         if let rootPath = Utility.getRootPath() {
             let fileName = filtedFileNames[indexPath.row]
             try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).png")
+            try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName)\(noteImageSubfix).png")
             try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).json")
             UserDefaults.standard.removeObject(forKey: fileName)
         }
-        allFileNames.remove(at: indexPath.row)
+        let fileName = filtedFileNames[indexPath.row]
+        if let indexInAllFileNames = allFileNames.firstIndex(of: fileName) {
+            allFileNames.remove(at: indexInAllFileNames)
+        }
         fileTableView.deleteRows(at: [indexPath], with: .fade)
         fileTableView.reloadData()
     }
@@ -213,7 +217,7 @@ extension ViewController: UITableViewDataSource {
             cell = UITableViewCell(style: .value1, reuseIdentifier: fileTableViewCellIdentifier)
         }
         
-        cell?.textLabel?.text = filtedFileNames[indexPath.row]
+        cell?.textLabel?.text = filtedFileNames[indexPath.row] + (Utility.hasNoteImage(for: filtedFileNames[indexPath.row]) ? hasNoteImageIcon : "")
         cell?.detailTextLabel?.text = getTagListString(for: filtedFileNames[indexPath.row])
         
         return cell!

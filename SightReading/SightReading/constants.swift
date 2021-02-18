@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 let noteImageSubfix = "&-note"
+let hasNoteImageIcon = " | \u{2118}"
 let photoCollectionWH: CGFloat = 128
 let basicInfoKey = "basic info"
 let tempoKey = "tempo"

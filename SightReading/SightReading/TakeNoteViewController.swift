@@ -20,6 +20,7 @@ class TakeNoteViewController: UIViewController {
     @IBOutlet weak var pencilButton: UIButton!
     @IBOutlet weak var eraserButton: UIButton!
     @IBOutlet weak var brushWidthSlider: UISlider!
+    @IBOutlet weak var brushWidthSliderValueLabel: UILabel!
     @IBOutlet weak var clearButton: UIButton!
     
     @IBOutlet weak var imageOuterContainer: UIView!
@@ -64,8 +65,9 @@ class TakeNoteViewController: UIViewController {
     private func configureSketchView() {
         sketchView.backgroundColor = .clear
         sketchView.delegate = self
-        sketchView.currentLineWidth = CGFloat(5.0)
+        sketchView.currentLineWidth = CGFloat(2.0)
         sketchView.currentTool = .pencil
+        sketchView.currentColor = .systemBlue
 //        if let sheetImage = sheetImage {
 //            sketchView.addImageLayer(sheetImage, rect: sketchView.bounds, lineWidth: 0, color: .clear)
 //        }
@@ -81,6 +83,7 @@ class TakeNoteViewController: UIViewController {
         brushWidthButton.selectedWidth = sketchView.currentLineWidth
         brushWidthSlider.value = Float(sketchView.currentLineWidth)
         brushWidthSlider.isHidden = true
+        brushWidthSliderValueLabel.isHidden = true
         undoButton.isEnabled = sketchView.canUndo
         redoButton.isEnabled = sketchView.canRedo
         clearButton.isEnabled = sketchView.hasContent
@@ -111,12 +114,14 @@ class TakeNoteViewController: UIViewController {
     
     @IBAction func brushColorButtonTapped() {
         let colorPickerVC = UIColorPickerViewController()
+        colorPickerVC.selectedColor = brushColorButton.selectedColor
         colorPickerVC.delegate = self
         present(colorPickerVC, animated: true, completion: nil)
     }
     
     @IBAction func brushWidthButtonTapped() {
-        brushWidthSlider.isHidden = false
+        brushWidthSlider.isHidden = !brushWidthSlider.isHidden
+        brushWidthSliderValueLabel.isHidden = brushWidthSlider.isHidden
     }
     
     @IBAction func pencilButtonTapped() {
@@ -139,10 +144,22 @@ class TakeNoteViewController: UIViewController {
         let sliderValue = sender.value
         sketchView.currentLineWidth = CGFloat(sliderValue)
         brushWidthButton.selectedWidth = CGFloat(sliderValue)
+        brushWidthSliderValueLabel.text = "\(Int(sliderValue))"
+        
+        let slidertTrack : CGRect = sender.trackRect(forBounds: sender.bounds)
+        let sliderFrm : CGRect = sender.thumbRect(forBounds: sender.bounds, trackRect: slidertTrack, value: sender.value)
+        brushWidthSliderValueLabel.center = CGPoint(x: sliderFrm.origin.x + sender.frame.origin.x + sliderFrm.size.width / 2 + 16, y: sender.frame.origin.y - 40)
     }
 
     @IBAction func didEndEditBrushWidthSlider() {
         brushWidthSlider.isHidden = true
+        brushWidthSliderValueLabel.isHidden = true
+    }
+    
+    @IBAction func handleDoubleTap(_ sender: UITapGestureRecognizer) {
+        if let isHidden = navigationController?.navigationBar.isHidden {
+            navigationController?.setNavigationBarHidden(!isHidden, animated: true)
+        }
     }
 }
 

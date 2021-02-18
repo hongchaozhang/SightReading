@@ -43,6 +43,14 @@ class Utility {
         return NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first
     }
     
+    class func hasNoteImage(for sheetImageName: String) -> Bool {
+        if let rootPath = getRootPath() {
+            let fullNoteImagePath = "\(rootPath)/\(sheetImageName)\(noteImageSubfix).png"
+            return FileManager.default.fileExists(atPath: fullNoteImagePath)
+        }
+        return false
+    }
+    
     // scale "size" (keep the size.width/size.height not changed) to fit the given containerSize
     // return the frame of the inner rect (which has the same width/height as "size")
     class func fit(size: CGSize, into containerSize: CGSize) -> CGRect {
