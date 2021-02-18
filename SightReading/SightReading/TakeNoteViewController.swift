@@ -155,12 +155,6 @@ class TakeNoteViewController: UIViewController {
         brushWidthSlider.isHidden = true
         brushWidthSliderValueLabel.isHidden = true
     }
-    
-    @IBAction func handleDoubleTap(_ sender: UITapGestureRecognizer) {
-        if let isHidden = navigationController?.navigationBar.isHidden {
-            navigationController?.setNavigationBarHidden(!isHidden, animated: true)
-        }
-    }
 }
 
 // MARK: - ATSketchViewDelegate

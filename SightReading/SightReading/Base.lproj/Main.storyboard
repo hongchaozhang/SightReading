@@ -282,9 +282,6 @@
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <gestureRecognizers/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="ppn-yS-636" appends="YES" id="ozg-j9-A1D"/>
-                                </connections>
                             </view>
                             <stackView opaque="NO" contentMode="scaleToFill" distribution="equalSpacing" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ODZ-O9-SAP">
                                 <rect key="frame" x="187.5" y="1015" width="435" height="45"/>
@@ -440,11 +437,6 @@
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="XBh-vu-q3H" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer numberOfTapsRequired="2" id="ppn-yS-636">
-                    <connections>
-                        <action selector="handleDoubleTap:" destination="2XC-62-FPM" id="WAS-cH-2DK"/>
-                    </connections>
-                </tapGestureRecognizer>
             </objects>
             <point key="canvasLocation" x="2534.8148148148148" y="520.55555555555554"/>
         </scene>
