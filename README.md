@@ -1,5 +1,5 @@
 # Sight Reading（视奏）
-帮助养成钢琴视奏习惯，主要是提前预读的习惯。
+帮助养成钢琴视奏习惯，主要是提前预读的习惯。应用实现参考[帮助练习钢琴视奏的应用SightReading](http://hongchaozhang.github.io/blog/2021/02/26/an-app-to-help-piano-sight-reading/)。
 
 ## 乐谱添加
 1. 从图片库添加乐谱图片。
