@@ -71,9 +71,7 @@ class ViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadFileNames()
-        loadTags()
-        fileTableView.reloadData()
+        loadRemoteFileNamesAndTags()
     }
     
     private func setupTagSelector() {
@@ -91,37 +89,63 @@ class ViewController: UIViewController {
     }
     
     // MARK: - load resources
-    private func loadFileNames() {
-        allFileNames = [String]()
-        if let rootPath = Utility.getRootPath(),
-           let enumerator = FileManager.default.enumerator(atPath: rootPath) {
-            for filePath in enumerator {
-                if let filePath = filePath as? String {
-                    let strings = filePath.split(separator: ".")
-                    if let fileNameSubSeqence = strings.first  {
-                        let originFileName = String(fileNameSubSeqence)
-                        let fileName = originFileName.replacingOccurrences(of: noteImageSubfix, with: "", options: .backwards, range: nil)
-                        if fileName != "DS_Store" && !allFileNames.contains(fileName) {
-                            allFileNames.append(fileName)
-                        }
+    
+    private func loadRemoteFileNamesAndTags() {
+
+        var request = URLRequest(url: URL(string: "http://localhost:3000/api/allMusicNames")!)
+        request.httpMethod = "GET"
+
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
+//            print(response!)
+            do {
+                let json = try JSONSerialization.jsonObject(with: data!) as! Dictionary<String, [String]>
+//                print(json)
+                if let allFileNames = json["allMusicNames"] {
+                    self.allFileNames = allFileNames
+                    self.allFileNames.sort()
+                    self.loadRemoteTags()
+                    DispatchQueue.main.async {
+                        self.fileTableView.reloadData()
                     }
                 }
+            } catch {
+                print("error")
             }
-        }
-        allFileNames.sort()
+        })
+
+        task.resume()
+    }
+    
+    private func loadRemoteTags() {
+        var request = URLRequest(url: URL(string: "http://localhost:3000/api/allTags")!)
+        request.httpMethod = "GET"
+
+        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
+            do {
+                let json = try JSONSerialization.jsonObject(with: data!) as! Dictionary<String, [String]>
+                if let allTags = json[self.allTagsKey] {
+                    self.allTags = allTags.sorted()
+                    self.allTagsForSelector = allTags.sorted()
+                    self.allTagsForSelector.insert(self.allTagConstant, at: 0)
+                }
+                for fileName in self.allFileNames {
+                    if let fileTags = json[fileName] {
+                        self.allFileTags[fileName] = fileTags.sorted()
+                    }
+                }
+                DispatchQueue.main.async {
+                    self.fileTableView.reloadData()
+                }
+            } catch {
+                print("error")
+            }
+        })
+
+        task.resume()
     }
     
     private func loadTags() {
-        if let allTags = UserDefaults.standard.value(forKey: allTagsKey) as? [String] {
-            self.allTags = allTags.sorted()
-            allTagsForSelector = allTags.sorted()
-            allTagsForSelector.insert(allTagConstant, at: 0)
-        }
-        for fileName in allFileNames {
-            if let fileTags = UserDefaults.standard.value(forKey: fileName) as? [String] {
-                allFileTags[fileName] = fileTags.sorted()
-            }
-        }
+        loadRemoteTags()
     }
     
     // MARK: - button callbacks
