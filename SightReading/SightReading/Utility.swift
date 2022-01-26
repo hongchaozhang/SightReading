@@ -68,4 +68,70 @@ class Utility {
         
         return CGRect(x: x, y: y, width: width, height: height)
     }
+    
+    class func getFileName(musicName: String, pageIndex: Int, fileType: String, isSinglePageMusic: Bool) -> String {
+        let pageIndexStr = isSinglePageMusic ? "" : "\(pageIndex+1)"
+        return "\(musicName)\(pageIndexStr).\(fileType)"
+    }
+    
+    class func getFileType(from fileName: String) -> String? {
+        if fileName.hasSuffix(".json") {
+            return "json"
+        }
+            
+        if fileName.hasSuffix(".png") {
+            return "png"
+        }
+        return nil
+    }
+    
+    class func getPageIndex(from fileName: String) -> Int {
+        var pageIndex = 0
+        
+        do {
+            let numReg = try NSRegularExpression(pattern: "[0-9]", options: [])
+            let matches = numReg.matches(in: fileName, options: [], range: NSRange(location: 0, length: fileName.count))
+            if let match = matches.first {
+                let nsRange = match.range(at: 0)
+                if let range = Range(nsRange, in: fileName),
+                   let index = Int(String(fileName.substring(with: range))) {
+                    pageIndex = index
+                }
+            }
+        } catch {
+            
+        }
+        
+        return pageIndex
+    }
+    
+    class func sendRequest(apiPath: String, params: [String: String]?, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
+        let urlComponents = NSURLComponents(string: "http://localhost:3000/api/\(apiPath)")
+
+        if let params = params {
+            var queryItems = [URLQueryItem]()
+            for (key, value) in params {
+                queryItems.append(URLQueryItem(name: key, value: value))
+            }
+            urlComponents?.queryItems = queryItems
+        }
+        
+        if let url = urlComponents?.url {
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+
+            let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
+//                print(response!)
+                if (error == nil) {
+                    onSuccess?(data)
+                } else {
+                    print(error.debugDescription)
+                    onFailure?(error)
+                }
+            })
+
+            task.resume()
+        }
+    }
+    
 }

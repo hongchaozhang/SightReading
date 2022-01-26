@@ -16,6 +16,9 @@ let tempoKey = "tempo"
 let meterKey = "meter"
 let maskOffsetKey = "maskOffset"
 let barFramesKey = "bar frames"
+let pageCountKey = "pageCount"
+let musicFileNamesKey = "musicFileNames"
+let notePageIndicesKey = "notePageIndices"
 
 let meterValues: [String] = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"]
 

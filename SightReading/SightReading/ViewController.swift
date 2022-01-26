@@ -91,12 +91,7 @@ class ViewController: UIViewController {
     // MARK: - load resources
     
     private func loadRemoteFileNamesAndTags() {
-
-        var request = URLRequest(url: URL(string: "http://localhost:3000/api/allMusicNames")!)
-        request.httpMethod = "GET"
-
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
-//            print(response!)
+        func onSuccess(_ data: Data?) {
             do {
                 let json = try JSONSerialization.jsonObject(with: data!) as! Dictionary<String, [String]>
 //                print(json)
@@ -111,16 +106,13 @@ class ViewController: UIViewController {
             } catch {
                 print("error")
             }
-        })
-
-        task.resume()
+        }
+        
+        Utility.sendRequest(apiPath: "allMusicNames", params: nil, onSuccess: onSuccess(_:), onFailure: nil)
     }
     
     private func loadRemoteTags() {
-        var request = URLRequest(url: URL(string: "http://localhost:3000/api/allTags")!)
-        request.httpMethod = "GET"
-
-        let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
+        func onSuccess(_ data: Data?) {
             do {
                 let json = try JSONSerialization.jsonObject(with: data!) as! Dictionary<String, [String]>
                 if let allTags = json[self.allTagsKey] {
@@ -139,9 +131,9 @@ class ViewController: UIViewController {
             } catch {
                 print("error")
             }
-        })
-
-        task.resume()
+        }
+        
+        Utility.sendRequest(apiPath: "allTags", params: nil, onSuccess: onSuccess(_:), onFailure: nil)
     }
     
     private func loadTags() {

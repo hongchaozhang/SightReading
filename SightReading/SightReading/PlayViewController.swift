@@ -43,6 +43,15 @@ class PlayViewController: UIViewController {
     private var firstMeterId: SystemSoundID = 1000;
     private var nonFirstMeterId: SystemSoundID = 1000
     
+    @IBOutlet var currentPageLabel: UILabel!
+    @IBOutlet var totalPageLabel: UILabel!
+    var currentPageIndex: Int = 0
+    var totalPageCount: Int = 1
+    var notePageIndices = [Int]()
+    var isSinglePageMusic = true
+    var musicFileNames = [String]()
+    var cachedResources = [[Int: [String: Any]]]()
+    
     // MARK: - override super functions
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -255,18 +264,58 @@ class PlayViewController: UIViewController {
     }
     
     private func loadJsonFile() {
-        if let rootPath = Utility.getRootPath(),
-           let jsonName = navigationItem.title,
-           let jsonData = FileManager.default.contents(atPath: "\(rootPath)/\(jsonName).json"),
-           let jsonObjectAny = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
-           let jsonObject = jsonObjectAny as? [String: Any] {
-            if let sheetBasicInfo = jsonObject[basicInfoKey] as? [String: String] {
-                self.sheetBasicInfo = sheetBasicInfo
-            }
-            if let barFrames = jsonObject[barFramesKey] as? [Int: CGRect] {
-                self.barFrames =  barFrames
+//        if let rootPath = Utility.getRootPath(),
+//           let jsonName = navigationItem.title,
+//           let jsonData = FileManager.default.contents(atPath: "\(rootPath)/\(jsonName).json"),
+//           let jsonObjectAny = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
+//           let jsonObject = jsonObjectAny as? [String: Any] {
+//            if let sheetBasicInfo = jsonObject[basicInfoKey] as? [String: String] {
+//                self.sheetBasicInfo = sheetBasicInfo
+//            }
+//            if let barFrames = jsonObject[barFramesKey] as? [Int: CGRect] {
+//                self.barFrames =  barFrames
+//            }
+//        }
+        
+        func onSuccess(_ data: Data?) {
+            do {
+                let fileInfoDic = try JSONSerialization.jsonObject(with: data!) as! [String: Any]
+                print(fileInfoDic)
+                if let pageCount = fileInfoDic[pageCountKey] as? Int {
+                    DispatchQueue.main.async {
+                        self.totalPageCount = pageCount
+                        self.totalPageLabel.text = String(pageCount)
+                    }
+                    self.isSinglePageMusic = pageCount == 1
+                }
+                if let notePageIndices = fileInfoDic[notePageIndicesKey] as? [Int] {
+                    self.notePageIndices = notePageIndices
+                }
+                if let musicFileNames = fileInfoDic[musicFileNamesKey] as? [String] {
+                    self.musicFileNames = musicFileNames
+                }
+                
+                self.loadMusicFiles()
+                
+            } catch {
+                print("error")
             }
         }
+        
+        Utility.sendRequest(apiPath: "musicFileInfo", params: ["musicName": navigationItem.title!], onSuccess: onSuccess(_:), onFailure: nil)
+        
+    }
+    
+    private func loadMusicFiles() {
+        let mySem = DispatchSemaphore(value: 0)
+        
+        for fileName in self.musicFileNames {
+            let isJson = fileName.hasSuffix(".json")
+            let isPng = fileName.hasSuffix(".png")
+            let pageIndex = Utility.getPageIndex(from: fileName)
+        }
+        
+        
     }
     
     private func loadSheetImage(with imageName: String) {
