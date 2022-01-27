@@ -74,6 +74,8 @@ class ViewController: UIViewController {
         loadFileNames()
         loadTags()
         fileTableView.reloadData()
+        
+//        chagneJsonFormate()
     }
     
     private func setupTagSelector() {
@@ -88,6 +90,72 @@ class ViewController: UIViewController {
     
     private func setupSearchBar() {
         searchBar.delegate = self
+    }
+    
+    // MARK: - Tools
+    private func chagneJsonFormate() {
+        if let rootPath = Utility.getRootPath(),
+           let enumerator = FileManager.default.enumerator(atPath: rootPath) {
+            
+            print(rootPath)
+            
+            // create folder
+            let docURL = URL(string: rootPath)!
+            let dataPath = docURL.appendingPathComponent("StringFormat")
+            if !FileManager.default.fileExists(atPath: dataPath.path) {
+                do {
+                    try FileManager.default.createDirectory(atPath: dataPath.path, withIntermediateDirectories: true, attributes: nil)
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
+            // resave the json file in string format
+            for filePath in enumerator {
+                if let filePath = filePath as? String {
+                    let strings = filePath.split(separator: ".")
+                    if let fileNameSubSeqence = strings.first  {
+                        let originFileName = String(fileNameSubSeqence)
+                        let fileName = originFileName.replacingOccurrences(of: noteImageSubfix, with: "", options: .backwards, range: nil)
+                        if fileName != "DS_Store" {
+                            print(fileName)
+                            if let jsonData = FileManager.default.contents(atPath: "\(rootPath)/\(fileName).json"),
+                                let jsonObjectAny = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
+                                let jsonObject = jsonObjectAny as? [String: Any] {
+                                
+                                // resave the json content from Int/CGRect to String/[String]
+                                var newJsonObject = [String: Any]()
+                                if let sheetBasicInfo = jsonObject[basicInfoKey] as? [String: String] {
+                                    newJsonObject[basicInfoKey] = sheetBasicInfo
+                                }
+                                if let barFrames = jsonObject[barFramesKey] as? [Int: CGRect] {
+                                    var newBarFrames = [String: [String]]()
+                                    for (key, value) in barFrames {
+                                        let newKey = String(key)
+                                        var newValue = [value.origin.x.description, value.origin.y.description, value.size.width.description, value.size.height.description]
+                                        newBarFrames[newKey] = newValue
+                                    }
+                                    newJsonObject[barFramesKey] = newBarFrames
+                                }
+                                
+                                do {
+                                    // Save the new strong-content json object into files
+                                    let newJsonData = try JSONSerialization.data(withJSONObject: newJsonObject, options: .prettyPrinted)
+                                    let jsonString = String.init(data: newJsonData, encoding: .utf8)
+                                    print(jsonString)
+                                    let newJsonPath = "\(rootPath)/StringFormat/\(fileName).json"
+                                    try jsonString?.write(to: URL(fileURLWithPath: newJsonPath), atomically: true, encoding: .utf8)
+                                } catch {
+                                    print("Error")
+                                }
+                                
+                                
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     
     // MARK: - load resources
