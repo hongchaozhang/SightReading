@@ -8,6 +8,12 @@
 import Foundation
 import UIKit
 
+enum MusicFileType {
+    case json
+    case sheet
+    case note
+}
+
 class Utility {
     // rect is relative rect in imageView
     class func getAbsoluteRect(with rect: CGRect, in size: CGSize) -> CGRect {
@@ -74,19 +80,21 @@ class Utility {
         return "\(musicName)\(pageIndexStr).\(fileType)"
     }
     
-    class func getFileType(from fileName: String) -> String? {
+    class func getFileType(from fileName: String) -> MusicFileType {
         if fileName.hasSuffix(".json") {
-            return "json"
+            return .json
         }
-            
-        if fileName.hasSuffix(".png") {
-            return "png"
+        
+        if fileName.hasSuffix("&-note.png") {
+            return .note
+        }else if fileName.hasSuffix(".png") {
+            return .sheet
         }
-        return nil
+        return .sheet
     }
     
-    class func getPageIndex(from fileName: String) -> Int {
-        var pageIndex = 0
+    class func getUIPageIndex(from fileName: String) -> Int {
+        var pageIndex = 1
         
         do {
             let numReg = try NSRegularExpression(pattern: "[0-9]", options: [])

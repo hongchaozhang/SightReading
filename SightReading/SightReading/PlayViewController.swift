@@ -45,12 +45,11 @@ class PlayViewController: UIViewController {
     
     @IBOutlet var currentPageLabel: UILabel!
     @IBOutlet var totalPageLabel: UILabel!
-    var currentPageIndex: Int = 0
-    var totalPageCount: Int = 1
-    var notePageIndices = [Int]()
-    var isSinglePageMusic = true
-    var musicFileNames = [String]()
-    var cachedResources = [[Int: [String: Any]]]()
+    private var currentPageIndex: Int = 0
+    private var totalPageCount: Int = 1
+//    private var notePageIndices = [Int]()
+    private var isSinglePageMusic = true
+    private var cachedResources = [Int: [String: Data]]()
     
     // MARK: - override super functions
     override func viewDidLoad() {
@@ -58,8 +57,7 @@ class PlayViewController: UIViewController {
         setupControls()
         setupNavigationbar()
         createSoundIDs()
-        loadJsonFile()
-        loadCurrentSheetImage()
+        loadMusicFileResources()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -263,20 +261,7 @@ class PlayViewController: UIViewController {
         }
     }
     
-    private func loadJsonFile() {
-//        if let rootPath = Utility.getRootPath(),
-//           let jsonName = navigationItem.title,
-//           let jsonData = FileManager.default.contents(atPath: "\(rootPath)/\(jsonName).json"),
-//           let jsonObjectAny = NSKeyedUnarchiver.unarchiveObject(with: jsonData),
-//           let jsonObject = jsonObjectAny as? [String: Any] {
-//            if let sheetBasicInfo = jsonObject[basicInfoKey] as? [String: String] {
-//                self.sheetBasicInfo = sheetBasicInfo
-//            }
-//            if let barFrames = jsonObject[barFramesKey] as? [Int: CGRect] {
-//                self.barFrames =  barFrames
-//            }
-//        }
-        
+    private func loadMusicFileResources() {
         func onSuccess(_ data: Data?) {
             do {
                 let fileInfoDic = try JSONSerialization.jsonObject(with: data!) as! [String: Any]
@@ -285,17 +270,20 @@ class PlayViewController: UIViewController {
                     DispatchQueue.main.async {
                         self.totalPageCount = pageCount
                         self.totalPageLabel.text = String(pageCount)
+                        if pageCount > 0 {
+                            self.setCurrentPageIndex(0)
+                        } else {
+                            self.currentPageLabel.text = "-"
+                        }
                     }
                     self.isSinglePageMusic = pageCount == 1
                 }
-                if let notePageIndices = fileInfoDic[notePageIndicesKey] as? [Int] {
-                    self.notePageIndices = notePageIndices
-                }
+//                if let notePageIndices = fileInfoDic[notePageIndicesKey] as? [Int] {
+//                    self.notePageIndices = notePageIndices
+//                }
                 if let musicFileNames = fileInfoDic[musicFileNamesKey] as? [String] {
-                    self.musicFileNames = musicFileNames
+                    self.loadMusicFiles(musicFileNames)
                 }
-                
-                self.loadMusicFiles()
                 
             } catch {
                 print("error")
@@ -306,92 +294,142 @@ class PlayViewController: UIViewController {
         
     }
     
-    private func loadMusicFiles() {
-        let mySem = DispatchSemaphore(value: 0)
+    private func loadMusicFiles(_ musicFileNames: [String]) {
+        let group = DispatchGroup()
+        let queue = DispatchQueue(label: "music file download", attributes: .concurrent)
         
-        for fileName in self.musicFileNames {
-            let isJson = fileName.hasSuffix(".json")
-            let isPng = fileName.hasSuffix(".png")
-            let pageIndex = Utility.getPageIndex(from: fileName)
+        for fileName in musicFileNames {
+            let noneUIPageIndex = Utility.getUIPageIndex(from: fileName) - 1
+            
+            queue.async(group: group) {
+                group.enter()
+                
+                func onSuccess(_ data: Data?) {
+                    if let data = data {
+                        if self.cachedResources[noneUIPageIndex] == nil {
+                            self.cachedResources[noneUIPageIndex] = [String: Data]()
+                        }
+                        self.cachedResources[noneUIPageIndex]![fileName] = data;
+                    }
+                    group.leave()
+                }
+                
+                func onFailure(_ error: Error?) {
+                    group.leave()
+                }
+                
+                Utility.sendRequest(apiPath: "musicFile", params: ["musicFileName": fileName], onSuccess: onSuccess(_:), onFailure: onFailure(_:))
+
+            }
         }
         
-        
+        group.notify(queue: DispatchQueue.main) {
+            print("all music files are downloaded.")
+            self.loadCurrentJsonFile()
+            self.loadCurrentSheetAndNoteImages()
+        }
     }
     
-    private func loadSheetImage(with imageName: String) {
-        if let rootPath = Utility.getRootPath(),
-           let sheetImage = UIImage(contentsOfFile: "\(rootPath)/\(imageName).png") {
-            sheetImageView.image = sheetImage
-            noteImageView.image = UIImage(contentsOfFile: "\(rootPath)/\(imageName)\(noteImageSubfix).png")
+    private func loadSheetAndNoteImages(with pageIndex: Int) {
+        if let onePageResources = cachedResources[pageIndex],
+           let musicName = navigationItem.title {
+            let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
+            let sheetFileName = "\(musicName)\(pageIndexString).png"
+            let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix).png"
+            if let sheetImageData = onePageResources[sheetFileName],
+               let sheetImage = UIImage.init(data: sheetImageData) {
+                sheetImageView.image = sheetImage
+            }
+            if let noteImageData = onePageResources[noteFileName],
+               let noteImage = UIImage.init(data: noteImageData) {
+                noteImageView.image = noteImage
+            }
             layoutImageView()
         }
     }
     
-    private func loadCurrentSheetImage() {
-        if let imageName = navigationItem.title {
-            loadSheetImage(with: imageName)
-        }
+    private func loadCurrentSheetAndNoteImages() {
+        loadSheetAndNoteImages(with: currentPageIndex)
     }
     
-    private func loadNextSheetImage() {
-        if let nextPageImageName = getNewTitle(isNext: true) {
-            loadSheetImage(with: nextPageImageName)
-        }
+    private func loadNextSheetAndNoteImages() {
+        loadSheetAndNoteImages(with: currentPageIndex + 1)
     }
     
-    private func loadPriviousSheetImage() {
-        if let nextPageImageName = getNewTitle(isNext: false) {
-            loadSheetImage(with: nextPageImageName)
-        }
+    private func loadPriviousSheetAndNoteImages() {
+        loadSheetAndNoteImages(with: currentPageIndex - 1)
     }
-    // MARK: - support multiple pages
-    // test1 -> test2
-    private func getNewTitle(isNext: Bool) -> String? {
-        if let currentTitle = navigationItem.title,
-           let pageIndexCharactor = currentTitle.last,
-           let pageIndex = Int(String(pageIndexCharactor)) {
-            let titlePrefixIndex = currentTitle.index(currentTitle.startIndex, offsetBy: currentTitle.count - 1)
-            let titlePrefix = currentTitle.substring(to: titlePrefixIndex)
-            let newTitle = titlePrefix + String(isNext ? (pageIndex+1) : (pageIndex-1))
-            if let rootPath = Utility.getRootPath() {
-                let newPath = "\(rootPath)/\(newTitle).png"
-                if FileManager.default.fileExists(atPath: newPath) {
-                    return newTitle
+    
+    private func loadJsonFile(with pageIndex: Int) {
+        if let onePageResources = cachedResources[pageIndex],
+           let musicName = navigationItem.title {
+            let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
+            let jsonFileName = "\(musicName)\(pageIndexString).json"
+            if let jsonData = onePageResources[jsonFileName] {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: jsonData) as! [String: Any]
+                    if let sheetBasicInfo = json[basicInfoKey] as? [String: String] {
+                        self.sheetBasicInfo = sheetBasicInfo
+                    }
+                    if let barFrames = json[barFramesKey] as? [String: [String]] {
+                        var newBarFrames = [Int: CGRect]()
+                        for (key, value) in barFrames {
+                            if let newKey = Int(key), value.count == 4 {
+                                if let x = Double(value[0]),
+                                   let y = Double(value[1]),
+                                   let w = Double(value[2]),
+                                   let h = Double(value[3]) {
+                                    let rect = CGRect(x: CGFloat(x), y: CGFloat(y), width: CGFloat(w), height: CGFloat(h))
+                                    newBarFrames[newKey] = rect
+                                }
+                            }
+                        }
+                        self.barFrames =  newBarFrames
+                    }
+                } catch {
+                    print("Error")
                 }
             }
         }
-        return nil
+    }
+    private func loadCurrentJsonFile() {
+        loadJsonFile(with: currentPageIndex)
+    }
+    
+    // MARK: - support multiple pages
+    
+    private func setCurrentPageIndex(_ index: Int) {
+        if index < 0 || index >= totalPageCount {
+            return
+        }
+        
+        currentPageIndex = index
+        currentPageLabel.text = String(index + 1)
     }
     
     private func hasNextPage() -> Bool {
-        if let _ = getNewTitle(isNext: true) {
-            return true
-        }
-        return false
+        return currentPageIndex + 1 < totalPageCount
     }
     
     private func hasPreviousPage() -> Bool {
-        if let _ = getNewTitle(isNext: false) {
-            return true
-        }
-        return false
+        return currentPageIndex > 0
     }
     
     @IBAction func imageRightSwiped(_ sender: UISwipeGestureRecognizer) {
         // change to the privouse page
-        if !isPlaying, let newTitle = getNewTitle(isNext: false) {
-            navigationItem.title = newTitle
-            loadJsonFile()
-            loadCurrentSheetImage()
+        if !isPlaying && hasPreviousPage() {
+            setCurrentPageIndex(currentPageIndex - 1)
+            loadCurrentJsonFile()
+            loadCurrentSheetAndNoteImages()
         }
     }
     
     @IBAction func imageLeftSwiped(_ sender: UISwipeGestureRecognizer) {
         // change to the next page
-        if !isPlaying, let newTitle = getNewTitle(isNext: true) {
-            navigationItem.title = newTitle
-            loadJsonFile()
-            loadCurrentSheetImage()
+        if !isPlaying && hasNextPage() {
+            setCurrentPageIndex(currentPageIndex + 1)
+            loadCurrentJsonFile()
+            loadCurrentSheetAndNoteImages()
         }
     }
     
@@ -465,7 +503,7 @@ class PlayViewController: UIViewController {
                                     if realBarIndex == totalBarCount && self.hasNextPage() {
                                         // load the next page at the beginning of the last bar of the previous page so the the user has time to read the first bar of the new page
                                         self.mask.frame = .zero
-                                        self.loadNextSheetImage()
+                                        self.loadNextSheetAndNoteImages()
                                     } else {
                                         self.mask.frame = Utility.getAbsoluteRect(with: barFrame, in: self.sheetImageView.frame.size)
                                     }
@@ -477,13 +515,12 @@ class PlayViewController: UIViewController {
                         }
                         
                         meterIndex += 1
-                        if meterIndex == totalMeters,
-                           let newTitle = self.getNewTitle(isNext: true) {
+                        if meterIndex == totalMeters && self.hasNextPage() {
                             self.isFirstPage = false
-                            self.navigationItem.title = newTitle
-                            self.loadJsonFile()
+                            self.setCurrentPageIndex(self.currentPageIndex + 1)
+                            self.loadCurrentJsonFile()
                             // load the next page at the beginning of the last bar of the previous page, not the end of the last bar
-                            // self.loadSheetImage()
+                            // self.loadCurrentSheetAndNoteImages()
                             self.startAnimateMask()
                         } else {
                             animateMask()
