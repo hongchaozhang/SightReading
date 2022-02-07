@@ -100,12 +100,9 @@ class AddNewViewController: UIViewController {
     
     private func saveFiles() {
         func saveImageFile() {
-            if let rootPath = Utility.getRootPath(),
-               let imageName = getFileName() {
-                let imagePath = "\(rootPath)/\(imageName).png"
-                print("image path: \(imagePath)")
+            if let imageName = getFileName() {
                 if let image = imageView.image, let imageData = image.pngData() {
-                    FileManager.default.createFile(atPath: imagePath, contents: imageData, attributes: nil)
+                    Utility.uploadFileToServer(fileData: imageData, fileName: imageName, musicFileType: .sheet, onSuccess: nil, onFailure: nil)
                 }
             }
         }
@@ -115,9 +112,20 @@ class AddNewViewController: UIViewController {
                let jsonFileName = getFileName() {
                 let jsonPath = "\(rootPath)/\(jsonFileName).json"
                 print("image path: \(jsonPath)")
-                let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: barFrames]
-                if let jsonData = try? NSKeyedArchiver.archivedData(withRootObject: jsonDic, requiringSecureCoding: false) {
-                    FileManager.default.createFile(atPath: jsonPath, contents: jsonData, attributes: nil)
+                var newBarFrames = [String: [String]]()
+                for (key, value) in barFrames {
+                    let newKey = String(key)
+                    var newValue = [String]()
+                    newValue.append(value.origin.x.description)
+                    newValue.append(value.origin.y.description)
+                    newValue.append(value.size.width.description)
+                    newValue.append(value.size.height.description)
+                    newBarFrames[newKey] = newValue
+                }
+                let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: newBarFrames]
+
+                if let jsonData = try? JSONSerialization.data(withJSONObject: jsonDic, options: []) {
+                    Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json, onSuccess: nil, onFailure: nil)
                 }
             }
         }

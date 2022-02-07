@@ -142,4 +142,57 @@ class Utility {
         }
     }
     
+    class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
+            guard
+                let url  = URL(string: "http://localhost:3000/api/uploadImage")
+                else { return };
+            var request = URLRequest(url: url)
+        let fileType = musicFileType == .json ? ".json" : ".png"
+            let boundary:String = "Boundary-\(UUID().uuidString)"
+            
+            request.httpMethod = "POST"
+            request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+            
+            var body = Data()
+            body.append("--\(boundary)\r\n");
+            body.append("Content-Disposition: form-data; name=uploadFile; filename=\(fileName)\r\n");
+            body.append("Content-Type: \(fileType)\r\n\r\n");
+            body.append(fileData);
+            body.append("\r\n");
+            body.append("--\(boundary)--\r\n")
+            request.httpBody = body
+            
+            let task = URLSession.shared.dataTask(with: request, completionHandler: { (data, res, error) in
+                if let error = error {
+                    print(error.localizedDescription);
+                    return;
+                };
+                guard let data = data else {
+                    print(res.debugDescription);
+                    return;
+                };
+                do {
+                    guard
+                        let json    = try JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any],
+                        let success = json["success"] as? Int, success == 1,
+                        let msg     = json["msg"] as? String
+                        else { return };
+                    DispatchQueue.main.async {
+                        //
+                    };
+                } catch let error {
+                    print(error.localizedDescription);
+                };
+            })
+            task.resume()
+        }
+    
+}
+
+extension Data{
+    mutating func append(_ string: String, using encoding: String.Encoding = .utf8) {
+        if let data = string.data(using: encoding) {
+            append(data)
+        }
+    }
 }

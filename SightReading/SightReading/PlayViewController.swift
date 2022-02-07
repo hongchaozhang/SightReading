@@ -339,10 +339,14 @@ class PlayViewController: UIViewController {
             if let sheetImageData = onePageResources[sheetFileName],
                let sheetImage = UIImage.init(data: sheetImageData) {
                 sheetImageView.image = sheetImage
+            } else {
+                sheetImageView.image = nil
             }
             if let noteImageData = onePageResources[noteFileName],
                let noteImage = UIImage.init(data: noteImageData) {
                 noteImageView.image = noteImage
+            } else {
+                noteImageView.image = nil
             }
             layoutImageView()
         }
@@ -624,11 +628,11 @@ extension PlayViewController: TakeNoteViewControllerDelegate {
         if let image = image {
             noteImageView.frame = imageViewInnerContainer.bounds
             noteImageView.image = image
-            if let rootPath = Utility.getRootPath(),
-               let fileName = navigationItem.title,
+            if let musicName = navigationItem.title,
                let imageData = image.pngData() {
-                let fullFilePath = "\(rootPath)/\(fileName)\(noteImageSubfix).png"
-                FileManager.default.createFile(atPath: fullFilePath, contents: imageData, attributes: nil)
+                let pageIndexString = isSinglePageMusic ? "" : "\(currentPageIndex+1)"
+                let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix)"
+                Utility.uploadFileToServer(fileData: imageData, fileName: noteFileName, musicFileType: .note, onSuccess: nil, onFailure: nil)
             }
         }
     }
