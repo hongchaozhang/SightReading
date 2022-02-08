@@ -113,6 +113,21 @@ class Utility {
         return pageIndex
     }
     
+    class func convertBarFramesToString(_ barFrames: [Int: CGRect]) -> [String: [String]] {
+        var newBarFrames = [String: [String]]()
+        for (key, value) in barFrames {
+            let newKey = String(key)
+            var newValue = [String]()
+            newValue.append(value.origin.x.description)
+            newValue.append(value.origin.y.description)
+            newValue.append(value.size.width.description)
+            newValue.append(value.size.height.description)
+            newBarFrames[newKey] = newValue
+        }
+        
+        return newBarFrames
+    }
+    
     class func sendRequest(apiPath: String, params: [String: String]?, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
         let urlComponents = NSURLComponents(string: "http://localhost:3000/api/\(apiPath)")
 

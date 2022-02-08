@@ -62,7 +62,6 @@ class PlayViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        restoreSettings()
         isPlaying = false
     }
     
@@ -180,14 +179,14 @@ class PlayViewController: UIViewController {
         sheetBasicInfo[tempoKey] = tempoString
         sheetBasicInfo[meterKey] = meterString
         sheetBasicInfo[maskOffsetKey] = maskOffsetString
+        let newBarFrames = Utility.convertBarFramesToString(barFrames)
         
-        if let rootPath = Utility.getRootPath(),
-           let jsonFileName = navigationItem.title {
-            let jsonPath = "\(rootPath)/\(jsonFileName).json"
-            let jsonDic: [String: Any] = [basicInfoKey: sheetBasicInfo, barFramesKey: barFrames]
-            if let jsonData = try? NSKeyedArchiver.archivedData(withRootObject: jsonDic, requiringSecureCoding: false) {
-                FileManager.default.createFile(atPath: jsonPath, contents: jsonData, attributes: nil)
-            }
+        let jsonDic: [String: Any] = [basicInfoKey: sheetBasicInfo, barFramesKey: newBarFrames]
+        if let jsonData = try? JSONSerialization.data(withJSONObject: jsonDic, options: .prettyPrinted),
+           let musicName = navigationItem.title {
+            let pageIndexString = isSinglePageMusic ? "" : "\(currentPageIndex+1)"
+            let jsonFileName = "\(musicName)\(pageIndexString)"
+            Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json, onSuccess: nil, onFailure: nil)
         }
     }
     
@@ -374,6 +373,9 @@ class PlayViewController: UIViewController {
                     let json = try JSONSerialization.jsonObject(with: jsonData) as! [String: Any]
                     if let sheetBasicInfo = json[basicInfoKey] as? [String: String] {
                         self.sheetBasicInfo = sheetBasicInfo
+                        DispatchQueue.main.async {
+                            self.restoreSettings()
+                        }
                     }
                     if let barFrames = json[barFramesKey] as? [String: [String]] {
                         var newBarFrames = [Int: CGRect]()

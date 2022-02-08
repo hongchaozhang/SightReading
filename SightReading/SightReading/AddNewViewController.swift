@@ -112,19 +112,10 @@ class AddNewViewController: UIViewController {
                let jsonFileName = getFileName() {
                 let jsonPath = "\(rootPath)/\(jsonFileName).json"
                 print("image path: \(jsonPath)")
-                var newBarFrames = [String: [String]]()
-                for (key, value) in barFrames {
-                    let newKey = String(key)
-                    var newValue = [String]()
-                    newValue.append(value.origin.x.description)
-                    newValue.append(value.origin.y.description)
-                    newValue.append(value.size.width.description)
-                    newValue.append(value.size.height.description)
-                    newBarFrames[newKey] = newValue
-                }
+                let newBarFrames = Utility.convertBarFramesToString(barFrames)
                 let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: newBarFrames]
 
-                if let jsonData = try? JSONSerialization.data(withJSONObject: jsonDic, options: []) {
+                if let jsonData = try? JSONSerialization.data(withJSONObject: jsonDic, options: .prettyPrinted) {
                     Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json, onSuccess: nil, onFailure: nil)
                 }
             }
