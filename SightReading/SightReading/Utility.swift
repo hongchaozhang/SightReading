@@ -128,7 +128,7 @@ class Utility {
         return newBarFrames
     }
     
-    class func sendRequest(apiPath: String, params: [String: String]?, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
+    class func sendRequest(apiPath: String, httpMethod: String = "GET", params: [String: String]?, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
         let urlComponents = NSURLComponents(string: "http://localhost:3000/api/\(apiPath)")
 
         if let params = params {
@@ -141,7 +141,7 @@ class Utility {
         
         if let url = urlComponents?.url {
             var request = URLRequest(url: url)
-            request.httpMethod = "GET"
+            request.httpMethod = httpMethod
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
 //                print(response!)
@@ -156,10 +156,11 @@ class Utility {
             task.resume()
         }
     }
+
     
     class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
             guard
-                let url  = URL(string: "http://localhost:3000/api/uploadImage")
+                let url  = URL(string: "http://localhost:3000/api/uploadFile")
                 else { return };
             var request = URLRequest(url: url)
         let fileType = musicFileType == .json ? ".json" : ".png"

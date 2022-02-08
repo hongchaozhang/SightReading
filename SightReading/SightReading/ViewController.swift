@@ -274,11 +274,21 @@ extension ViewController: UISearchBarDelegate {
 // MARK: - EditTagViewControllerDelegate
 extension ViewController: EditTagViewControllerDelegate {
     func confirmEditingTags(with allTags: [String], selectedTags: [String], fileName: String) {
-        if allTags.count > 0 {
-            UserDefaults.standard.setValue(allTags, forKey: allTagsKey)
-        }
-        if selectedTags.count > 0 {
-            UserDefaults.standard.setValue(selectedTags, forKey: fileName)
+        func buildTagsInfoParam() -> String? {
+            var tagsInfoDic = [String: [String]]()
+            
+            if allTags.count > 0 {
+                tagsInfoDic[allTagsKey] = allTags
+            }
+            if selectedTags.count > 0 {
+                tagsInfoDic[fileName] = selectedTags
+            }
+            
+            if let tagsInfoData = try? JSONSerialization.data(withJSONObject: tagsInfoDic, options: .prettyPrinted) {
+                return String(data: tagsInfoData, encoding: .utf8)
+            }
+            
+            return nil
         }
         
         self.allTags = allTags
@@ -286,6 +296,10 @@ extension ViewController: EditTagViewControllerDelegate {
         self.allTagsForSelector.insert(allTagConstant, at: 0)
         self.allFileTags[fileName] = selectedTags
         self.fileTableView.reloadData()
+        
+        if let tagsInfo = buildTagsInfoParam() {
+            Utility.sendRequest(apiPath: "allTags", httpMethod: "PUT", params: ["tagsInfo": tagsInfo], onSuccess: nil, onFailure: nil)
+        }
     }
 }
 
