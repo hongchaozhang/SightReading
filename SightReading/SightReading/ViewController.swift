@@ -175,19 +175,15 @@ extension ViewController: UITableViewDelegate {
     }
     
     private func deleteItem(at indexPath: IndexPath) {
-        if let rootPath = Utility.getRootPath() {
-            let fileName = filtedFileNames[indexPath.row]
-            try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).png")
-            try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName)\(noteImageSubfix).png")
-            try? FileManager.default.removeItem(atPath: "\(rootPath)/\(fileName).json")
-            UserDefaults.standard.removeObject(forKey: fileName)
-        }
-        let fileName = filtedFileNames[indexPath.row]
-        if let indexInAllFileNames = allFileNames.firstIndex(of: fileName) {
+        let musicName = filtedFileNames[indexPath.row]
+        
+        if let indexInAllFileNames = allFileNames.firstIndex(of: musicName) {
             allFileNames.remove(at: indexInAllFileNames)
         }
         fileTableView.deleteRows(at: [indexPath], with: .fade)
         fileTableView.reloadData()
+        
+        Utility.sendRequest(apiPath: "music", httpMethod: "DELETE", params: ["musicName": musicName], onSuccess: nil, onFailure: nil)
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {

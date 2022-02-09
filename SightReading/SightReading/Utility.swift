@@ -50,11 +50,13 @@ class Utility {
     }
     
     class func hasNoteImage(for sheetImageName: String) -> Bool {
-        if let rootPath = getRootPath() {
-            let fullNoteImagePath = "\(rootPath)/\(sheetImageName)\(noteImageSubfix).png"
-            return FileManager.default.fileExists(atPath: fullNoteImagePath)
-        }
+//        if let rootPath = getRootPath() {
+//            let fullNoteImagePath = "\(rootPath)/\(sheetImageName)\(noteImageSubfix).png"
+//            return FileManager.default.fileExists(atPath: fullNoteImagePath)
+//        }
         return false
+        
+        // need enhance GET /api/allMusicNames to return if a music has note images or not.
     }
     
     // scale "size" (keep the size.width/size.height not changed) to fit the given containerSize
