@@ -108,7 +108,7 @@ class ViewController: UIViewController {
             }
         }
         
-        Utility.sendRequest(apiPath: "allMusicNames", params: nil, onSuccess: onSuccess(_:), onFailure: nil)
+        Utility.sendRequest(apiPath: "allMusicNames", onSuccess: onSuccess(_:))
     }
     
     private func loadRemoteTags() {
@@ -133,7 +133,7 @@ class ViewController: UIViewController {
             }
         }
         
-        Utility.sendRequest(apiPath: "allTags", params: nil, onSuccess: onSuccess(_:), onFailure: nil)
+        Utility.sendRequest(apiPath: "allTags", onSuccess: onSuccess(_:))
     }
     
     private func loadTags() {
@@ -183,7 +183,7 @@ extension ViewController: UITableViewDelegate {
         fileTableView.deleteRows(at: [indexPath], with: .fade)
         fileTableView.reloadData()
         
-        Utility.sendRequest(apiPath: "music", httpMethod: "DELETE", params: ["musicName": musicName], onSuccess: nil, onFailure: nil)
+        Utility.sendRequest(apiPath: "music", httpMethod: "DELETE", params: ["musicName": musicName])
     }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath) -> [UITableViewRowAction]? {
@@ -294,7 +294,7 @@ extension ViewController: EditTagViewControllerDelegate {
         self.fileTableView.reloadData()
         
         if let tagsInfo = buildTagsInfoParam() {
-            Utility.sendRequest(apiPath: "allTags", httpMethod: "PUT", params: ["tagsInfo": tagsInfo], onSuccess: nil, onFailure: nil)
+            Utility.sendRequest(apiPath: "allTags", httpMethod: "PUT", params: ["tagsInfo": tagsInfo])
         }
     }
 }

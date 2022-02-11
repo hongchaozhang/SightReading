@@ -102,21 +102,18 @@ class AddNewViewController: UIViewController {
         func saveImageFile() {
             if let imageName = getFileName() {
                 if let image = imageView.image, let imageData = image.pngData() {
-                    Utility.uploadFileToServer(fileData: imageData, fileName: imageName, musicFileType: .sheet, onSuccess: nil, onFailure: nil)
+                    Utility.uploadFileToServer(fileData: imageData, fileName: imageName, musicFileType: .sheet)
                 }
             }
         }
         
         func saveJsonFile() {
-            if let rootPath = Utility.getRootPath(),
-               let jsonFileName = getFileName() {
-                let jsonPath = "\(rootPath)/\(jsonFileName).json"
-                print("image path: \(jsonPath)")
+            if let jsonFileName = getFileName() {
                 let newBarFrames = Utility.convertBarFramesToString(barFrames)
                 let jsonDic: [String: Any] = [basicInfoKey: [String: String](), barFramesKey: newBarFrames]
 
                 if let jsonData = try? JSONSerialization.data(withJSONObject: jsonDic, options: .prettyPrinted) {
-                    Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json, onSuccess: nil, onFailure: nil)
+                    Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json)
                 }
             }
         }

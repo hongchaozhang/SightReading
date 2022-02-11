@@ -186,7 +186,7 @@ class PlayViewController: UIViewController {
            let musicName = navigationItem.title {
             let pageIndexString = isSinglePageMusic ? "" : "\(currentPageIndex+1)"
             let jsonFileName = "\(musicName)\(pageIndexString)"
-            Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json, onSuccess: nil, onFailure: nil)
+            Utility.uploadFileToServer(fileData: jsonData, fileName: jsonFileName, musicFileType: .json)
         }
     }
     
@@ -289,7 +289,7 @@ class PlayViewController: UIViewController {
             }
         }
         
-        Utility.sendRequest(apiPath: "musicFileInfo", params: ["musicName": navigationItem.title!], onSuccess: onSuccess(_:), onFailure: nil)
+        Utility.sendRequest(apiPath: "musicFileInfo", params: ["musicName": navigationItem.title!], onSuccess: onSuccess(_:))
         
     }
     
@@ -634,7 +634,7 @@ extension PlayViewController: TakeNoteViewControllerDelegate {
                let imageData = image.pngData() {
                 let pageIndexString = isSinglePageMusic ? "" : "\(currentPageIndex+1)"
                 let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix)"
-                Utility.uploadFileToServer(fileData: imageData, fileName: noteFileName, musicFileType: .note, onSuccess: nil, onFailure: nil)
+                Utility.uploadFileToServer(fileData: imageData, fileName: noteFileName, musicFileType: .note)
             }
         }
     }

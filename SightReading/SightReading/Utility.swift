@@ -130,7 +130,7 @@ class Utility {
         return newBarFrames
     }
     
-    class func sendRequest(apiPath: String, httpMethod: String = "GET", params: [String: String]?, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
+    class func getURL(apiPath: String, params: [String: String]?) -> URL? {
         let urlComponents = NSURLComponents(string: "http://localhost:3000/api/\(apiPath)")
 
         if let params = params {
@@ -141,7 +141,11 @@ class Utility {
             urlComponents?.queryItems = queryItems
         }
         
-        if let url = urlComponents?.url {
+        return urlComponents?.url
+    }
+    
+    class func sendRequest(apiPath: String, httpMethod: String = "GET", params: [String: String]? = nil, onSuccess: ((Data?) -> Void)? = nil, onFailure: ((Error?) -> Void)? = nil) {
+        if let url = Utility.getURL(apiPath: apiPath, params: params) {
             var request = URLRequest(url: url)
             request.httpMethod = httpMethod
 
@@ -160,10 +164,8 @@ class Utility {
     }
 
     
-    class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)?, onFailure: ((Error?) -> Void)?) {
-            guard
-                let url  = URL(string: "http://localhost:3000/api/uploadFile")
-                else { return };
+    class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)? = nil, onFailure: ((Error?) -> Void)? = nil) {
+        guard let url  = Utility.getURL(apiPath: "uploadFile", params: [fileNameKey: fileName]) else { return };
             var request = URLRequest(url: url)
         let fileType = musicFileType == .json ? ".json" : ".png"
             let boundary:String = "Boundary-\(UUID().uuidString)"
