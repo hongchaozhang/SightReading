@@ -131,7 +131,7 @@ class Utility {
     }
     
     class func getURL(apiPath: String, params: [String: String]?) -> URL? {
-        let urlComponents = NSURLComponents(string: "http://localhost:3000/api/\(apiPath)")
+        let urlComponents = NSURLComponents(string: "http://175.24.174.227:8081/api/\(apiPath)")
 
         if let params = params {
             var queryItems = [URLQueryItem]()
