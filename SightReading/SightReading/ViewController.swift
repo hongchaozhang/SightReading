@@ -115,17 +115,17 @@ class ViewController: UIViewController {
         func onSuccess(_ data: Data?) {
             do {
                 let json = try JSONSerialization.jsonObject(with: data!) as! Dictionary<String, [String]>
-                if let allTags = json[self.allTagsKey] {
-                    self.allTags = allTags.sorted()
-                    self.allTagsForSelector = allTags.sorted()
-                    self.allTagsForSelector.insert(self.allTagConstant, at: 0)
-                }
-                for fileName in self.allFileNames {
-                    if let fileTags = json[fileName] {
-                        self.allFileTags[fileName] = fileTags.sorted()
-                    }
-                }
                 DispatchQueue.main.async {
+                    if let allTags = json[self.allTagsKey] {
+                        self.allTags = allTags.sorted()
+                        self.allTagsForSelector = allTags.sorted()
+                        self.allTagsForSelector.insert(self.allTagConstant, at: 0)
+                    }
+                    for fileName in self.allFileNames {
+                        if let fileTags = json[fileName] {
+                            self.allFileTags[fileName] = fileTags.sorted()
+                        }
+                    }
                     self.fileTableView.reloadData()
                 }
             } catch {
@@ -134,10 +134,6 @@ class ViewController: UIViewController {
         }
         
         Utility.sendRequest(apiPath: "allTags", onSuccess: onSuccess(_:))
-    }
-    
-    private func loadTags() {
-        loadRemoteTags()
     }
     
     // MARK: - button callbacks
