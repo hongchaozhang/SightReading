@@ -329,11 +329,34 @@ class PlayViewController: UIViewController {
         }
     }
     
+    /*
+     @param onePageFiles: ["music1.json", "music1.jpg", "music1&-note.png"]
+     @return fileType: "jpg"
+     */
+    private func getSheetFileType(onePageFiles: [String]?) -> String {
+        guard let onePageFiles = onePageFiles else { return "jpg" }
+        
+        var fileType = "jpg"
+        for item in onePageFiles {
+            if !item.hasSuffix("\(noteImageSubfix).png") {
+                for supportedImageType in imageTypes {
+                    if item.hasSuffix(supportedImageType) {
+                        fileType = supportedImageType
+                        break
+                    }
+                }
+            }
+        }
+        
+        return fileType
+    }
+    
     private func loadSheetAndNoteImages(with pageIndex: Int) {
         if let onePageResources = cachedResources[pageIndex],
            let musicName = navigationItem.title {
             let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
-            let sheetFileName = "\(musicName)\(pageIndexString).png"
+            let sheetFileType = getSheetFileType(onePageFiles: [String](onePageResources.keys))
+            let sheetFileName = "\(musicName)\(pageIndexString).\(sheetFileType)"
             let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix).png"
             if let sheetImageData = onePageResources[sheetFileName],
                let sheetImage = UIImage.init(data: sheetImageData) {

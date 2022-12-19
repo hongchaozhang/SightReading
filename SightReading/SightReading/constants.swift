@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+let imageTypes = ["jpg", "jpeg", "png"]
 let noteImageSubfix = "&-note"
 let hasNoteImageIcon = " | \u{2118}"
 let photoCollectionWH: CGFloat = 128
