@@ -155,12 +155,22 @@ class Utility {
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
 //                print(response!)
-                if (error == nil) {
-                    onSuccess?(data)
+                if let httpResponse = response as? HTTPURLResponse {
+                    let code = httpResponse.statusCode
+                    if code == 404 || code == 400 || code == 500 {
+                        onFailure?(error)
+                    } else {
+                        onSuccess?(data)
+                    }
                 } else {
-                    print(error.debugDescription)
-                    onFailure?(error)
+                    if (error == nil) {
+                        onSuccess?(data)
+                    } else {
+                        print(error.debugDescription)
+                        onFailure?(error)
+                    }
                 }
+
             })
 
             task.resume()

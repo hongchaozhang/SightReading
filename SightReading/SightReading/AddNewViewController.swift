@@ -123,17 +123,9 @@ class AddNewViewController: UIViewController {
     }
     
     @objc func addNewDone() {
-        if let rootPath = Utility.getRootPath() {
-            if let fileName = getFileName() {
-                let jsonFilePath = "\(rootPath)/\(fileName).json"
-                let pngImageFilePath = "\(rootPath)/\(fileName).png"
-                let jpgImageFilePath = "\(rootPath)/\(fileName).jpg"
-                let jpegImageFilePath = "\(rootPath)/\(fileName).jpeg"
-                
-                if FileManager.default.fileExists(atPath: jsonFilePath) ||
-                    FileManager.default.fileExists(atPath: pngImageFilePath) ||
-                    FileManager.default.fileExists(atPath: jpgImageFilePath) ||
-                    FileManager.default.fileExists(atPath: jpegImageFilePath) {
+        if let fileName = getFileName() {
+            func onSuccess(_ data: Data?) {
+                DispatchQueue.main.async {
                     let alert = UIAlertController(title: "Warning", message: "There is already files named \(fileName). Clike OK will override it.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
                         self.saveFiles()
@@ -141,15 +133,24 @@ class AddNewViewController: UIViewController {
                     }))
                     alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
                     self.present(alert, animated: true, completion: nil)
-                } else {
-                    saveFiles()
-                    navigationController?.popViewController(animated: true)
                 }
-            } else {
-                let alert = UIAlertController(title: "Warning", message: "A name should be set before saving.", preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                self.present(alert, animated: true, completion: nil)
             }
+            
+            func onFailure(_ error: Error?) {
+                DispatchQueue.main.async {
+                    self.saveFiles()
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+            
+            // try to get {fileName}.json
+            //   if exists, alert the user
+            //   if not exist, upload directly
+            Utility.sendRequest(apiPath: "musicFile", params: ["musicFileName": "\(fileName).json"], onSuccess: onSuccess(_:), onFailure: onFailure(_:))
+        } else {
+            let alert = UIAlertController(title: "Warning", message: "A name should be set before saving.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
         }
     }
     
