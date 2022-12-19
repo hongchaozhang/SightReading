@@ -101,7 +101,7 @@ class AddNewViewController: UIViewController {
     private func saveFiles() {
         func saveImageFile() {
             if let imageName = getFileName() {
-                if let image = imageView.image, let imageData = image.pngData() {
+                if let image = imageView.image, let imageData = image.jpegData(compressionQuality: 0.6) {
                     Utility.uploadFileToServer(fileData: imageData, fileName: imageName, musicFileType: .sheet)
                 }
             }
@@ -126,9 +126,14 @@ class AddNewViewController: UIViewController {
         if let rootPath = Utility.getRootPath() {
             if let fileName = getFileName() {
                 let jsonFilePath = "\(rootPath)/\(fileName).json"
-                let imageFilePath = "\(rootPath)/\(fileName).png"
+                let pngImageFilePath = "\(rootPath)/\(fileName).png"
+                let jpgImageFilePath = "\(rootPath)/\(fileName).jpg"
+                let jpegImageFilePath = "\(rootPath)/\(fileName).jpeg"
                 
-                if FileManager.default.fileExists(atPath: jsonFilePath) || FileManager.default.fileExists(atPath: imageFilePath) {
+                if FileManager.default.fileExists(atPath: jsonFilePath) ||
+                    FileManager.default.fileExists(atPath: pngImageFilePath) ||
+                    FileManager.default.fileExists(atPath: jpgImageFilePath) ||
+                    FileManager.default.fileExists(atPath: jpegImageFilePath) {
                     let alert = UIAlertController(title: "Warning", message: "There is already files named \(fileName). Clike OK will override it.", preferredStyle: .alert)
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { _ in
                         self.saveFiles()

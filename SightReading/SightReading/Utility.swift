@@ -89,9 +89,10 @@ class Utility {
         
         if fileName.hasSuffix("&-note.png") {
             return .note
-        }else if fileName.hasSuffix(".png") {
+        } else if fileName.hasSuffix(".png") || fileName.hasSuffix(".jpg") || fileName.hasSuffix(".jpeg") {
             return .sheet
         }
+        
         return .sheet
     }
     
@@ -131,7 +132,10 @@ class Utility {
     }
     
     class func getURL(apiPath: String, params: [String: String]?) -> URL? {
-        let urlComponents = NSURLComponents(string: "http://175.24.174.227:8081/api/\(apiPath)")
+//        let urlComponents = NSURLComponents(string: "http://175.24.174.227:8081/api/\(apiPath)") // tecent lighthouse server Zhang Hongchao
+//        let urlComponents = NSURLComponents(string: "http://10.23.35.26:8081/api/\(apiPath)") // mstr vra server
+//        let urlComponents = NSURLComponents(string: "http://localhost:8081/api/\(apiPath)") // localhost server
+        let urlComponents = NSURLComponents(string: "http://1.117.142.222:8081/api/\(apiPath)") // tecent lighthouse server Zhang Kaiyun
 
         if let params = params {
             var queryItems = [URLQueryItem]()
@@ -167,7 +171,7 @@ class Utility {
     class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)? = nil, onFailure: ((Error?) -> Void)? = nil) {
         guard let url  = Utility.getURL(apiPath: "uploadFile", params: [fileNameKey: fileName]) else { return };
             var request = URLRequest(url: url)
-        let fileType = musicFileType == .json ? ".json" : ".png"
+        let fileType = musicFileType == .json ? ".json" : ".jpg"
             let boundary:String = "Boundary-\(UUID().uuidString)"
             
             request.httpMethod = "POST"
