@@ -1,3 +1,10 @@
+# Branch info
+1. main: 主分支。
+2. remoteResource: 资源文件需要从[node服务器](https://github.com/hongchaozhang/SightReadingServer)下载。
+3. localResource: 所有资源文件都保存在本地，不需要服务器。
+4. localResource_tools: 导出现有乐谱和音乐信息的工具。
+
+
 # Sight Reading（视奏）
 帮助养成钢琴视奏习惯，主要是提前预读的习惯。应用实现参考[帮助练习钢琴视奏的应用SightReading](http://hongchaozhang.github.io/blog/2021/02/26/an-app-to-help-piano-sight-reading/)。
 
