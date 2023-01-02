@@ -181,7 +181,7 @@ class Utility {
     class func uploadFileToServer(fileData: Data, fileName: String, musicFileType: MusicFileType, onSuccess: ((Data?) -> Void)? = nil, onFailure: ((Error?) -> Void)? = nil) {
         guard let url  = Utility.getURL(apiPath: "uploadFile", params: [fileNameKey: fileName]) else { return };
             var request = URLRequest(url: url)
-        let fileType = musicFileType == .json ? ".json" : ".jpg"
+        let fileType = musicFileType == .json ? ".json" : (musicFileType == .note ? ".png" : ".jpg")
             let boundary:String = "Boundary-\(UUID().uuidString)"
             
             request.httpMethod = "POST"
