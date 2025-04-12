@@ -50,6 +50,7 @@ class PlayViewController: UIViewController {
 //    private var notePageIndices = [Int]()
     private var isSinglePageMusic = true
     private var cachedResources = [Int: [String: Data]]()
+    private let cachedResourcesQueue = DispatchQueue(label: "cachedResourcesQueue")
     
     // MARK: - override super functions
     override func viewDidLoad() {
@@ -261,13 +262,36 @@ class PlayViewController: UIViewController {
     }
     
     private func loadMusicFileResources() {
+        // 重置资源缓存
+        cachedResourcesQueue.async {
+            self.cachedResources.removeAll()
+        }
+        
+        // 重置页面状态
+        currentPageIndex = 0
+        totalPageCount = 1
+        isFirstPage = true
+        barFrames.removeAll()
+        sheetBasicInfo.removeAll()
+        
+        // 确保有有效的音乐名称
+        guard let musicName = navigationItem.title, !musicName.isEmpty else {
+            print("错误：无效的音乐名称")
+            return
+        }
+        
         func onSuccess(_ data: Data?) {
+            guard let data = data else {
+                print("错误：无效的文件信息数据")
+                return
+            }
+            
             do {
-                let fileInfoDic = try JSONSerialization.jsonObject(with: data!) as! [String: Any]
+                let fileInfoDic = try JSONSerialization.jsonObject(with: data) as! [String: Any]
                 print(fileInfoDic)
                 if let pageCount = fileInfoDic[pageCountKey] as? Int {
                     DispatchQueue.main.async {
-                        self.totalPageCount = pageCount
+                        self.totalPageCount = max(1, pageCount) // 确保页数至少为1
                         self.totalPageLabel.text = String(pageCount)
                         if pageCount > 0 {
                             self.setCurrentPageIndex(0)
@@ -277,20 +301,52 @@ class PlayViewController: UIViewController {
                     }
                     self.isSinglePageMusic = pageCount == 1
                 }
-//                if let notePageIndices = fileInfoDic[notePageIndicesKey] as? [Int] {
-//                    self.notePageIndices = notePageIndices
-//                }
+                
                 if let musicFileNames = fileInfoDic[musicFileNamesKey] as? [String] {
-                    self.loadMusicFiles(musicFileNames)
+                    if musicFileNames.isEmpty {
+                        print("警告：音乐文件列表为空")
+                    } else {
+                        self.loadMusicFiles(musicFileNames)
+                    }
+                } else {
+                    print("错误：无法获取音乐文件列表")
                 }
                 
+                // 缓存文件信息
+                let jsonFileName = "\(musicName)_fileInfo.json"
+                _ = CacheManager.shared.cacheFile(data: data, fileName: jsonFileName)
             } catch {
-                print("error")
+                print("解析音乐文件信息失败: \(error)")
             }
         }
         
-        Utility.sendRequest(apiPath: "musicFileInfo", params: ["musicName": navigationItem.title!], onSuccess: onSuccess(_:))
+        func onFailure(_ error: Error?) {
+            print("获取音乐文件信息失败: \(String(describing: error))")
+            
+            // 在UI上显示错误
+            DispatchQueue.main.async {
+                let alert = UIAlertController(
+                    title: "加载失败",
+                    message: "无法加载音乐文件信息，请检查网络连接后重试。",
+                    preferredStyle: .alert
+                )
+                alert.addAction(UIAlertAction(title: "确定", style: .default))
+                self.present(alert, animated: true)
+            }
+        }
         
+        // 先检查缓存
+        let jsonFileName = "\(musicName)_fileInfo.json"
+        if CacheManager.shared.hasCachedData(), let cachedData = CacheManager.shared.getCachedFile(fileName: jsonFileName) {
+            onSuccess(cachedData)
+        } else {
+            Utility.sendRequest(
+                apiPath: "musicFileInfo", 
+                params: ["musicName": musicName], 
+                onSuccess: onSuccess,
+                onFailure: onFailure
+            )
+        }
     }
     
     private func loadMusicFiles(_ musicFileNames: [String]) {
@@ -298,17 +354,25 @@ class PlayViewController: UIViewController {
         let queue = DispatchQueue(label: "music file download", attributes: .concurrent)
         
         for fileName in musicFileNames {
-            let noneUIPageIndex = Utility.getUIPageIndex(from: fileName) - 1
+            // 确保获取到的是有效的整数索引
+            let pageIndex = Utility.getUIPageIndex(from: fileName)
+            let noneUIPageIndex = max(0, pageIndex - 1) // 确保索引不为负数
             
             queue.async(group: group) {
                 group.enter()
                 
                 func onSuccess(_ data: Data?) {
                     if let data = data {
-                        if self.cachedResources[noneUIPageIndex] == nil {
-                            self.cachedResources[noneUIPageIndex] = [String: Data]()
+                        // 同步访问字典，防止并发问题
+                        self.cachedResourcesQueue.async {
+                            if self.cachedResources[noneUIPageIndex] == nil {
+                                self.cachedResources[noneUIPageIndex] = [String: Data]()
+                            }
+                            self.cachedResources[noneUIPageIndex]![fileName] = data
                         }
-                        self.cachedResources[noneUIPageIndex]![fileName] = data;
+                        
+                        // 缓存音乐文件
+                        _ = CacheManager.shared.cacheFile(data: data, fileName: fileName)
                     }
                     group.leave()
                 }
@@ -317,8 +381,12 @@ class PlayViewController: UIViewController {
                     group.leave()
                 }
                 
-                Utility.sendRequest(apiPath: "musicFile", params: ["musicFileName": fileName], onSuccess: onSuccess(_:), onFailure: onFailure(_:))
-
+                // 先检查缓存
+                if CacheManager.shared.hasCachedData(), let cachedData = CacheManager.shared.getCachedFile(fileName: fileName) {
+                    onSuccess(cachedData)
+                } else {
+                    Utility.sendRequest(apiPath: "musicFile", params: ["musicFileName": fileName], onSuccess: onSuccess(_:), onFailure: onFailure(_:))
+                }
             }
         }
         
@@ -352,25 +420,40 @@ class PlayViewController: UIViewController {
     }
     
     private func loadSheetAndNoteImages(with pageIndex: Int) {
-        if let onePageResources = cachedResources[pageIndex],
-           let musicName = navigationItem.title {
-            let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
-            let sheetFileType = getSheetFileType(onePageFiles: [String](onePageResources.keys))
-            let sheetFileName = "\(musicName)\(pageIndexString).\(sheetFileType)"
-            let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix).png"
-            if let sheetImageData = onePageResources[sheetFileName],
-               let sheetImage = UIImage.init(data: sheetImageData) {
-                sheetImageView.image = sheetImage
+        // 安全检查：确保pageIndex有效
+        guard pageIndex >= 0, pageIndex < totalPageCount else {
+            print("警告: 尝试加载无效页面索引 \(pageIndex)")
+            return
+        }
+        
+        // 线程安全地访问缓存
+        cachedResourcesQueue.sync {
+            if let onePageResources = cachedResources[pageIndex],
+               let musicName = navigationItem.title {
+                let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
+                let sheetFileType = getSheetFileType(onePageFiles: [String](onePageResources.keys))
+                let sheetFileName = "\(musicName)\(pageIndexString).\(sheetFileType)"
+                let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix).png"
+                
+                // UI更新放在主线程
+                DispatchQueue.main.async {
+                    if let sheetImageData = onePageResources[sheetFileName],
+                       let sheetImage = UIImage(data: sheetImageData) {
+                        self.sheetImageView.image = sheetImage
+                    } else {
+                        self.sheetImageView.image = nil
+                    }
+                    if let noteImageData = onePageResources[noteFileName],
+                       let noteImage = UIImage(data: noteImageData) {
+                        self.noteImageView.image = noteImage
+                    } else {
+                        self.noteImageView.image = nil
+                    }
+                    self.layoutImageView()
+                }
             } else {
-                sheetImageView.image = nil
+                print("无法加载页面 \(pageIndex) 的图像资源")
             }
-            if let noteImageData = onePageResources[noteFileName],
-               let noteImage = UIImage.init(data: noteImageData) {
-                noteImageView.image = noteImage
-            } else {
-                noteImageView.image = nil
-            }
-            layoutImageView()
         }
     }
     
@@ -379,45 +462,62 @@ class PlayViewController: UIViewController {
     }
     
     private func loadNextSheetAndNoteImages() {
-        loadSheetAndNoteImages(with: currentPageIndex + 1)
+        if hasNextPage() {
+            loadSheetAndNoteImages(with: currentPageIndex + 1)
+        }
     }
     
     private func loadPriviousSheetAndNoteImages() {
-        loadSheetAndNoteImages(with: currentPageIndex - 1)
+        if hasPreviousPage() {
+            loadSheetAndNoteImages(with: currentPageIndex - 1)
+        }
     }
     
     private func loadJsonFile(with pageIndex: Int) {
-        if let onePageResources = cachedResources[pageIndex],
-           let musicName = navigationItem.title {
-            let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
-            let jsonFileName = "\(musicName)\(pageIndexString).json"
-            if let jsonData = onePageResources[jsonFileName] {
-                do {
-                    let json = try JSONSerialization.jsonObject(with: jsonData) as! [String: Any]
-                    if let sheetBasicInfo = json[basicInfoKey] as? [String: String] {
-                        self.sheetBasicInfo = sheetBasicInfo
-                        DispatchQueue.main.async {
-                            self.restoreSettings()
-                        }
-                    }
-                    if let barFrames = json[barFramesKey] as? [String: [String]] {
-                        var newBarFrames = [Int: CGRect]()
-                        for (key, value) in barFrames {
-                            if let newKey = Int(key), value.count == 4 {
-                                if let x = Double(value[0]),
-                                   let y = Double(value[1]),
-                                   let w = Double(value[2]),
-                                   let h = Double(value[3]) {
-                                    let rect = CGRect(x: CGFloat(x), y: CGFloat(y), width: CGFloat(w), height: CGFloat(h))
-                                    newBarFrames[newKey] = rect
-                                }
+        // 安全检查：确保pageIndex有效
+        guard pageIndex >= 0, pageIndex < totalPageCount else {
+            print("警告: 尝试加载无效页面索引JSON \(pageIndex)")
+            return
+        }
+        
+        // 线程安全地访问缓存
+        cachedResourcesQueue.sync {
+            if let onePageResources = cachedResources[pageIndex],
+               let musicName = navigationItem.title {
+                let pageIndexString = isSinglePageMusic ? "" : "\(pageIndex+1)"
+                let jsonFileName = "\(musicName)\(pageIndexString).json"
+                if let jsonData = onePageResources[jsonFileName] {
+                    do {
+                        let json = try JSONSerialization.jsonObject(with: jsonData) as! [String: Any]
+                        if let sheetBasicInfo = json[basicInfoKey] as? [String: String] {
+                            self.sheetBasicInfo = sheetBasicInfo
+                            DispatchQueue.main.async {
+                                self.restoreSettings()
                             }
                         }
-                        self.barFrames =  newBarFrames
+                        if let barFrames = json[barFramesKey] as? [String: [String]] {
+                            var newBarFrames = [Int: CGRect]()
+                            for (key, value) in barFrames {
+                                if let newKey = Int(key), value.count == 4 {
+                                    if let x = Double(value[0]),
+                                       let y = Double(value[1]),
+                                       let w = Double(value[2]),
+                                       let h = Double(value[3]) {
+                                        let rect = CGRect(x: CGFloat(x), y: CGFloat(y), width: CGFloat(w), height: CGFloat(h))
+                                        newBarFrames[newKey] = rect
+                                    }
+                                }
+                            }
+                            self.barFrames = newBarFrames
+                        }
+                    } catch {
+                        print("解析JSON文件失败: \(error)")
                     }
-                } catch {
-                    print("Error")
+                } else {
+                    print("找不到页面 \(pageIndex) 的JSON文件")
                 }
+            } else {
+                print("无法加载页面 \(pageIndex) 的JSON资源")
             }
         }
     }
@@ -658,6 +758,10 @@ extension PlayViewController: TakeNoteViewControllerDelegate {
                 let pageIndexString = isSinglePageMusic ? "" : "\(currentPageIndex+1)"
                 let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix)"
                 Utility.uploadFileToServer(fileData: imageData, fileName: noteFileName, musicFileType: .note)
+                
+                // 缓存笔记图片
+                let cacheFileName = "\(noteFileName).png"
+                _ = CacheManager.shared.cacheFile(data: imageData, fileName: cacheFileName)
             }
         }
     }

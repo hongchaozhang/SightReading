@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		BA604DCD2DAA6140007BF94D /* CacheManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA604DCC2DAA6140007BF94D /* CacheManager.swift */; };
 		BA65F7ED25BACCED009A7FE5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F7EC25BACCED009A7FE5 /* AppDelegate.swift */; };
 		BA65F7EF25BACCED009A7FE5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F7EE25BACCED009A7FE5 /* SceneDelegate.swift */; };
 		BA65F7F125BACCED009A7FE5 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA65F7F025BACCED009A7FE5 /* ViewController.swift */; };
@@ -51,6 +52,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		BA604DCC2DAA6140007BF94D /* CacheManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheManager.swift; sourceTree = "<group>"; };
 		BA65F7E925BACCED009A7FE5 /* SightReading.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SightReading.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA65F7EC25BACCED009A7FE5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		BA65F7EE25BACCED009A7FE5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 				BAB0BF7125CBE5B30093E527 /* ATSketchKit */,
 				BA65F7F025BACCED009A7FE5 /* ViewController.swift */,
 				BA65F80925BACDAE009A7FE5 /* AddNewViewController.swift */,
+				BA604DCC2DAA6140007BF94D /* CacheManager.swift */,
 				BA65F80825BACDAE009A7FE5 /* PhotoCollectionViewController.swift */,
 				BA65F80625BACDAD009A7FE5 /* PhotoCollectionViewLayout.swift */,
 				BA65F80725BACDAD009A7FE5 /* PhotoCollectionCell.swift */,
@@ -309,6 +312,7 @@
 				BAB0BF9C25CBE5B40093E527 /* ATSketchViewDelegate.swift in Sources */,
 				BA65F81125BACDAE009A7FE5 /* PhotoCollectionViewController.swift in Sources */,
 				BAB0BF9425CBE5B40093E527 /* ATColorPicker+Delegate.swift in Sources */,
+				BA604DCD2DAA6140007BF94D /* CacheManager.swift in Sources */,
 				BAB0BF9125CBE5B40093E527 /* ATUnistrokeTemplate.swift in Sources */,
 				BAB0BF9225CBE5B40093E527 /* ATSmartBezierPath+Smoothing.swift in Sources */,
 				BA65F7ED25BACCED009A7FE5 /* AppDelegate.swift in Sources */,
@@ -469,7 +473,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4S9ASJUQLQ;
+				DEVELOPMENT_TEAM = 7YJJ46828S;
 				INFOPLIST_FILE = SightReading/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -488,7 +492,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 4S9ASJUQLQ;
+				DEVELOPMENT_TEAM = 7YJJ46828S;
 				INFOPLIST_FILE = SightReading/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

@@ -90,15 +90,29 @@ class TakeNoteViewController: UIViewController {
     }
     
     private func configureSaveBarItem() {
-        let saveBarItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveButtonTapped))
+        let saveBarItem = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveAndReturn))
         navigationItem.rightBarButtonItem = saveBarItem
     }
     
     // MARK: - control callbacks
-    @objc func saveButtonTapped() {
+    @objc func saveAndReturn() {
+        var savedImage: UIImage? = nil
+        
         if sketchView.hasContent {
             sheetImageView.removeFromSuperview()
-            delegate?.saveNote(with: sketchView.produceImage(with: true))
+            savedImage = sketchView.produceImage(with: true)
+            delegate?.saveNote(with: savedImage)
+            
+            // 缓存绘制的笔记
+            if let musicName = navigationItem.title,
+               let image = savedImage,
+               let imageData = image.pngData() {
+                let pageIndexString = ""  // 根据需要添加页码
+                let noteFileName = "\(musicName)\(pageIndexString)\(noteImageSubfix).png"
+                _ = CacheManager.shared.cacheFile(data: imageData, fileName: noteFileName)
+            }
+        } else {
+            delegate?.saveNote(with: nil)
         }
         
         navigationController?.popViewController(animated: true)

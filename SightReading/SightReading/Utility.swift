@@ -100,20 +100,20 @@ class Utility {
         var pageIndex = 1
         
         do {
-            let numReg = try NSRegularExpression(pattern: "[0-9]", options: [])
+            let numReg = try NSRegularExpression(pattern: "[0-9]+", options: [])
             let matches = numReg.matches(in: fileName, options: [], range: NSRange(location: 0, length: fileName.count))
             if let match = matches.first {
                 let nsRange = match.range(at: 0)
                 if let range = Range(nsRange, in: fileName),
-                   let index = Int(String(fileName.substring(with: range))) {
+                   let index = Int(fileName[range]) {
                     pageIndex = index
                 }
             }
         } catch {
-            
+            print("Error parsing page index from filename: \(fileName)")
         }
         
-        return pageIndex
+        return max(1, pageIndex) // 确保返回值至少为1
     }
     
     class func convertBarFramesToString(_ barFrames: [Int: CGRect]) -> [String: [String]] {
@@ -135,7 +135,7 @@ class Utility {
 //        let urlComponents = NSURLComponents(string: "http://175.24.174.227:8081/api/\(apiPath)") // tecent lighthouse server Zhang Hongchao
 //        let urlComponents = NSURLComponents(string: "http://10.23.35.26:8081/api/\(apiPath)") // mstr vra server
 //        let urlComponents = NSURLComponents(string: "http://localhost:8081/api/\(apiPath)") // localhost server
-        let urlComponents = NSURLComponents(string: "http://1.117.142.222:8081/api/\(apiPath)") // tecent lighthouse server Zhang Kaiyun
+        let urlComponents = NSURLComponents(string: "http://192.168.31.163:8081/api/\(apiPath)") // tecent lighthouse server Zhang Kaiyun
 
         if let params = params {
             var queryItems = [URLQueryItem]()
@@ -149,9 +149,67 @@ class Utility {
     }
     
     class func sendRequest(apiPath: String, httpMethod: String = "GET", params: [String: String]? = nil, onSuccess: ((Data?) -> Void)? = nil, onFailure: ((Error?) -> Void)? = nil) {
+        // 检查是否有缓存
+        if httpMethod == "GET" {
+            // 对于GET请求，首先检查缓存
+            var cacheKey = apiPath
+            if let params = params {
+                for (key, value) in params {
+                    cacheKey += "_\(key)_\(value)"
+                }
+            }
+            
+            // 特殊处理某些API路径的缓存
+            if apiPath == "allMusicNames" && CacheManager.shared.hasCachedData() {
+                if let cachedMusicNames = CacheManager.shared.getCachedMusicNames() {
+                    // 创建缓存的响应数据
+                    let jsonResponse: [String: [String]] = ["allMusicNames": cachedMusicNames]
+                    if let data = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []) {
+                        onSuccess?(data)
+                        return
+                    }
+                }
+            } else if apiPath == "allTags" && CacheManager.shared.hasCachedData() {
+                if let cachedAllTags = CacheManager.shared.getCachedAllTags() {
+                    // 首先创建响应的基本结构
+                    var jsonResponse: [String: [String]] = ["ALL_TAGS": cachedAllTags]
+                    
+                    // 添加每个音乐的标签
+                    if let cachedMusicNames = CacheManager.shared.getCachedMusicNames() {
+                        for musicName in cachedMusicNames {
+                            if let musicTags = CacheManager.shared.getCachedTagsForMusic(musicName: musicName) {
+                                jsonResponse[musicName] = musicTags
+                            } else {
+                                jsonResponse[musicName] = []
+                            }
+                        }
+                    }
+                    
+                    if let data = try? JSONSerialization.data(withJSONObject: jsonResponse, options: []) {
+                        onSuccess?(data)
+                        return
+                    }
+                }
+            } else if apiPath == "music" && params != nil && params!["musicName"] != nil && CacheManager.shared.hasCachedData() {
+                // 检查是否有音乐文件缓存
+                if let musicName = params!["musicName"] {
+                    // 在实际应用中，这里需要处理更多的文件类型
+                    let jsonFileName = "\(musicName).json"
+                    
+                    if let jsonData = CacheManager.shared.getCachedFile(fileName: jsonFileName) {
+                        onSuccess?(jsonData)
+                        return
+                    }
+                }
+            }
+        }
+        
+        // 没有缓存或不是GET请求，则发送网络请求
         if let url = Utility.getURL(apiPath: apiPath, params: params) {
             var request = URLRequest(url: url)
             request.httpMethod = httpMethod
+            // 设置超时时间为30秒
+            request.timeoutInterval = 30.0
 
             let task = URLSession.shared.dataTask(with: request, completionHandler: { data, response, error -> Void in
 //                print(response!)
@@ -160,6 +218,51 @@ class Utility {
                     if code == 404 || code == 400 || code == 500 {
                         onFailure?(error)
                     } else {
+                        // 如果请求成功，缓存响应数据
+                        if httpMethod == "GET" && data != nil {
+                            // 特殊处理某些API路径的缓存
+                            if apiPath == "allMusicNames" {
+                                do {
+                                    if let json = try JSONSerialization.jsonObject(with: data!) as? [String: [String]],
+                                       let allMusicNames = json["allMusicNames"] {
+                                        CacheManager.shared.cacheMusicNames(allMusicNames)
+                                    }
+                                } catch {
+                                    print("Failed to cache music names: \(error)")
+                                }
+                            } else if apiPath == "allTags" {
+                                do {
+                                    if let json = try JSONSerialization.jsonObject(with: data!) as? [String: [String]] {
+                                        if let allTags = json["ALL_TAGS"] {
+                                            CacheManager.shared.cacheAllTags(allTags)
+                                        }
+                                        
+                                        // 缓存每个音乐的标签
+                                        if let cachedMusicNames = CacheManager.shared.getCachedMusicNames() {
+                                            for musicName in cachedMusicNames {
+                                                if let musicTags = json[musicName] {
+                                                    CacheManager.shared.cacheTagsForMusic(musicName: musicName, tags: musicTags)
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch {
+                                    print("Failed to cache tags: \(error)")
+                                }
+                            } else if apiPath == "music" && params != nil && params!["musicName"] != nil {
+                                // 缓存音乐文件
+                                if let musicName = params!["musicName"] {
+                                    let jsonFileName = "\(musicName).json"
+                                    _ = CacheManager.shared.cacheFile(data: data!, fileName: jsonFileName)
+                                }
+                            } else if apiPath == "musicFile" && params != nil && params!["fileName"] != nil {
+                                // 缓存实际的音乐文件
+                                if let fileName = params!["fileName"] {
+                                    _ = CacheManager.shared.cacheFile(data: data!, fileName: fileName)
+                                }
+                            }
+                        }
+                        
                         onSuccess?(data)
                     }
                 } else {
