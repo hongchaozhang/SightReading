@@ -1,6 +1,19 @@
 # Sight Reading（视奏）
 帮助养成钢琴视奏习惯，主要是提前预读的习惯。应用实现参考[帮助练习钢琴视奏的应用SightReading](http://hongchaozhang.github.io/blog/2021/02/26/an-app-to-help-piano-sight-reading/)。
 
+## 代码分支介绍
+* remoteResource_cache
+  * 最完整的功能，包括网络请求和缓存本地乐谱管理。
+* remoteResource
+  * 只支持网络请求，不支持缓存本地乐谱管理。remoteResource_cache是在此基础上增加cache功能实现的。
+* main
+  * 刚开始的主分支，已经不再使用。
+* localResource
+  * 最初是版本，只支持本地乐谱管理，不支持网络请求。localResource_tools是在此基础上增加tools功能实现的。
+* localResource_tools
+  * 只支持本地乐谱管理，不支持网络请求。localResource_tools是在localResource基础上增加tools功能实现的。
+
+
 ## 乐谱添加
 1. 从图片库添加乐谱图片。
 2. 手动标注每小节区域。小节序号从1开始，每标注一个小节，小节序号自动加1。如果需要修改标注过的小节区域，手动设置小节序号之后，重新绘制该小节区域。
