@@ -64,12 +64,16 @@ class PlayViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         isPlaying = false
+        // Prevent screen from going to sleep
+        UIApplication.shared.isIdleTimerDisabled = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         stopPlaying()
         storeSettings()
+        // Allow screen to go to sleep when view disappears
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
     override func viewDidLayoutSubviews() {
